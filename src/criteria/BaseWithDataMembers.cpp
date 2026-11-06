@@ -1,6 +1,6 @@
-#include "Census.h"
+#include <clang/AST/RecursiveASTVisitor.h>
 
-#include "clang/AST/RecursiveASTVisitor.h"
+#include "Census.h"
 
 using namespace clang;
 
