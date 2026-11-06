@@ -13,6 +13,7 @@ public:
   explicit Visitor(ASTContext &Ctx) : Ctx(Ctx) {}
 
   bool shouldVisitTemplateInstantiations() const { return true; }
+  bool shouldVisitImplicitCode() const { return true; }
 
   bool VisitCXXConstructorDecl(CXXConstructorDecl *D) {
     if (D->isDependentContext() || D != D->getCanonicalDecl())
@@ -30,6 +31,8 @@ public:
       Detail += " = delete";
     else if (D->isExplicitlyDefaulted())
       Detail += " = default";
+    if (D->isImplicit())
+      Detail += " implicit";
     report(Ctx, "non-const-copy-constructor", D->getLocation(), Detail);
     return true;
   }
