@@ -77,6 +77,7 @@ def main():
         format="%(asctime)s %(levelname)-5s %(message)s",
         datefmt="%H:%M:%S",
     )
+    log.info("run.py %s", shlex.join(sys.argv[1:]))
 
     projects = args.projects or all_projects()
     unknown = [p for p in projects if p == "base" or not (PROJECTS / p / "build.sh").is_file()]
