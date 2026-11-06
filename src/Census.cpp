@@ -11,37 +11,37 @@ using namespace clang;
 
 namespace census {
 
-void report(const ASTContext &Ctx, StringRef Criterion, SourceLocation Loc,
+void report(const ASTContext &Ctx, StringRef Filter, SourceLocation Loc,
             StringRef Detail) {
   const SourceManager &SM = Ctx.getSourceManager();
   PresumedLoc P = SM.getPresumedLoc(SM.getFileLoc(Loc));
   if (P.isInvalid())
     return;
-  llvm::errs() << "census: " << Criterion << ": " << P.getFilename() << ":"
+  llvm::errs() << "census: " << Filter << ": " << P.getFilename() << ":"
                << P.getLine() << ":" << P.getColumn() << ": " << Detail << "\n";
 }
 
 namespace {
 
-using CriterionFn = void (*)(ASTContext &);
+using FilterFn = void (*)(ASTContext &);
 
-const llvm::StringMap<CriterionFn> AllCriteria = {
-    {"base-with-data-members", Criteria::HasBaseWithDataMembers},
-    {"non-const-copy-constructor", Criteria::HasNonConstCopyConstructor},
+const llvm::StringMap<FilterFn> AllFilters = {
+    {"base-with-data-members", Filters::HasBaseWithDataMembers},
+    {"non-const-copy-constructor", Filters::HasNonConstCopyConstructor},
 };
 
 class Consumer : public ASTConsumer {
 public:
-  explicit Consumer(std::vector<CriterionFn> Selected)
+  explicit Consumer(std::vector<FilterFn> Selected)
       : Selected(std::move(Selected)) {}
 
   void HandleTranslationUnit(ASTContext &Ctx) override {
-    for (CriterionFn Run : Selected)
+    for (FilterFn Run : Selected)
       Run(Ctx);
   }
 
 private:
-  std::vector<CriterionFn> Selected;
+  std::vector<FilterFn> Selected;
 };
 
 class Action : public PluginASTAction {
@@ -55,15 +55,15 @@ protected:
                  const std::vector<std::string> &Args) override {
     for (const std::string &Name : Args) {
       if (Name == "list") {
-        for (const auto &E : AllCriteria)
+        for (const auto &E : AllFilters)
           llvm::outs() << E.first() << "\n";
         continue;
       }
-      auto It = AllCriteria.find(Name);
-      if (It == AllCriteria.end()) {
+      auto It = AllFilters.find(Name);
+      if (It == AllFilters.end()) {
         DiagnosticsEngine &D = CI.getDiagnostics();
         D.Report(D.getCustomDiagID(DiagnosticsEngine::Error,
-                                   "census: unknown criterion '%0'"))
+                                   "census: unknown filter '%0'"))
             << Name;
         return false;
       }
@@ -71,7 +71,7 @@ protected:
     }
 
     if (Args.empty())
-      for (const auto &E : AllCriteria)
+      for (const auto &E : AllFilters)
         Selected.push_back(E.second);
     return true;
   }
@@ -79,7 +79,7 @@ protected:
   ActionType getActionType() override { return AddBeforeMainAction; }
 
 private:
-  std::vector<CriterionFn> Selected;
+  std::vector<FilterFn> Selected;
 };
 
 } // namespace

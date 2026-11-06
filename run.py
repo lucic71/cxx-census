@@ -66,9 +66,9 @@ def main():
     parser.add_argument("projects", nargs="*", help="projects to build (default: all)")
     parser.add_argument("-j", "--jobs", type=int, default=1,
                         help="how many projects to build at once (default: 1, serial)")
-    parser.add_argument("-c", "--criteria", nargs="?", const="",
-                        help="comma-separated criteria to run (default: all); "
-                             "without a value, list the supported criteria")
+    parser.add_argument("-f", "--filters", nargs="?", const="",
+                        help="comma-separated filters to run (default: all); "
+                             "without a value, list the supported filters")
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -94,7 +94,7 @@ def main():
         log.error("plugin failed, not building any project")
         sys.exit(1)
 
-    if args.criteria == "":
+    if args.filters == "":
         names = subprocess.run(
             in_base(f"echo | $CXX -x c++ -fsyntax-only -fplugin={PLUGIN} -fplugin-arg-census-list -"),
             check=True, capture_output=True, text=True).stdout.split()
@@ -104,13 +104,13 @@ def main():
     log.info("building %d project(s), %d at a time: %s", len(projects), args.jobs, " ".join(projects))
 
     cxxflags = f"-fplugin={PLUGIN}"
-    if args.criteria is not None:
-        for name in args.criteria.split(","):
+    if args.filters is not None:
+        for name in args.filters.split(","):
             cxxflags += f" -fplugin-arg-census-{name}"
-    log.info("criteria: %s", args.criteria or "all")
+    log.info("filters: %s", args.filters or "all")
 
     if not run(in_base(f"echo | $CXX -x c++ -fsyntax-only {cxxflags} -"), "plugin"):
-        log.error("plugin does not load with these criteria, not building any project")
+        log.error("plugin does not load with these filters, not building any project")
         sys.exit(1)
 
     with ThreadPoolExecutor(max_workers=args.jobs) as pool:

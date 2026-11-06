@@ -51,7 +51,7 @@ private:
 
 } // namespace
 
-void Criteria::HasBaseWithDataMembers(ASTContext &Ctx) {
+void Filters::HasBaseWithDataMembers(ASTContext &Ctx) {
   Visitor(Ctx).TraverseDecl(Ctx.getTranslationUnitDecl());
 }
 

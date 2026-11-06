@@ -5,12 +5,12 @@
 
 namespace census {
 
-void report(const clang::ASTContext &Ctx, llvm::StringRef Criterion,
+void report(const clang::ASTContext &Ctx, llvm::StringRef Filter,
             clang::SourceLocation Loc, llvm::StringRef Detail);
 
-namespace Criteria {
+namespace Filters {
 void HasBaseWithDataMembers(clang::ASTContext &Ctx);
 void HasNonConstCopyConstructor(clang::ASTContext &Ctx);
-} // namespace Criteria
+} // namespace Filters
 
 } // namespace census

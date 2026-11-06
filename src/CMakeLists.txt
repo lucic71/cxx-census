@@ -14,8 +14,8 @@ set(CMAKE_CXX_STANDARD 17)
 add_library(census MODULE
   Census.cpp
   census_lib.cpp
-  criteria/BaseWithDataMembers.cpp
-  criteria/NonConstCopyConstructor.cpp
+  filters/BaseWithDataMembers.cpp
+  filters/NonConstCopyConstructor.cpp
 )
 set_target_properties(census PROPERTIES PREFIX "")
 

@@ -40,7 +40,7 @@ private:
 
 } // namespace
 
-void Criteria::HasNonConstCopyConstructor(ASTContext &Ctx) {
+void Filters::HasNonConstCopyConstructor(ASTContext &Ctx) {
   Visitor(Ctx).TraverseDecl(Ctx.getTranslationUnitDecl());
 }
 
