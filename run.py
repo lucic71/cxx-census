@@ -44,12 +44,12 @@ def in_base(script):
             "-v", f"{ROOT}:/census", "census-base", "bash", "-c", script]
 
 
-def build(project):
+def build(project, cxxflags):
     log.info("[%s] starting", project)
     start = time.monotonic()
     image = f"census-{project}"
     ok = run(["docker", "build", "-t", image, str(PROJECTS / project)], project) and run(
-        ["docker", "run", "--rm", "-v", f"{ROOT}:/census", "-e", f"CXXFLAGS=-fplugin={PLUGIN}",
+        ["docker", "run", "--rm", "-v", f"{ROOT}:/census", "-e", f"CXXFLAGS={cxxflags}",
          image, f"/census/projects/{project}/build.sh"],
         project,
     )
@@ -66,6 +66,8 @@ def main():
     parser.add_argument("projects", nargs="*", help="projects to build (default: all)")
     parser.add_argument("-j", "--jobs", type=int, default=1,
                         help="how many projects to build at once (default: 1, serial)")
+    parser.add_argument("-c", "--criteria",
+                        help="comma-separated criteria to run (default: all)")
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -92,8 +94,18 @@ def main():
         log.error("plugin failed, not building any project")
         sys.exit(1)
 
+    cxxflags = f"-fplugin={PLUGIN}"
+    if args.criteria is not None:
+        for name in args.criteria.split(","):
+            cxxflags += f" -fplugin-arg-census-{name}"
+    log.info("criteria: %s", args.criteria or "all")
+
+    if not run(in_base(f"echo | $CXX -x c++ -fsyntax-only {cxxflags} -"), "plugin"):
+        log.error("plugin does not load with these criteria, not building any project")
+        sys.exit(1)
+
     with ThreadPoolExecutor(max_workers=args.jobs) as pool:
-        results = dict(zip(projects, pool.map(build, projects)))
+        results = dict(zip(projects, pool.map(lambda p: build(p, cxxflags), projects)))
 
     run(in_base("find /census/src -name '*.cpp' -o -name '*.h'"
                 " | xargs clang-format-$CLANG_VERSION -i"), "format")

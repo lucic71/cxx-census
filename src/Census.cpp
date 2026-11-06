@@ -3,6 +3,9 @@
 #include <clang/AST/ASTConsumer.h>
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Frontend/FrontendPluginRegistry.h>
+#include <llvm/ADT/StringMap.h>
+
+#include <vector>
 
 using namespace clang;
 
@@ -20,26 +23,57 @@ void report(const ASTContext &Ctx, StringRef Criterion, SourceLocation Loc,
 
 namespace {
 
+using CriterionFn = void (*)(ASTContext &);
+
+const llvm::StringMap<CriterionFn> AllCriteria = {
+    {"base-with-data-members", Criteria::HasBaseWithDataMembers},
+};
+
 class Consumer : public ASTConsumer {
 public:
+  explicit Consumer(std::vector<CriterionFn> Selected)
+      : Selected(std::move(Selected)) {}
+
   void HandleTranslationUnit(ASTContext &Ctx) override {
-    Criteria::HasBaseWithDataMembers(Ctx);
+    for (CriterionFn Run : Selected)
+      Run(Ctx);
   }
+
+private:
+  std::vector<CriterionFn> Selected;
 };
 
 class Action : public PluginASTAction {
 protected:
   std::unique_ptr<ASTConsumer> CreateASTConsumer(CompilerInstance &,
                                                  StringRef) override {
-    return std::make_unique<Consumer>();
+    return std::make_unique<Consumer>(Selected);
   }
 
-  bool ParseArgs(const CompilerInstance &,
-                 const std::vector<std::string> &) override {
+  bool ParseArgs(const CompilerInstance &CI,
+                 const std::vector<std::string> &Args) override {
+    for (const std::string &Name : Args) {
+      auto It = AllCriteria.find(Name);
+      if (It == AllCriteria.end()) {
+        DiagnosticsEngine &D = CI.getDiagnostics();
+        D.Report(D.getCustomDiagID(DiagnosticsEngine::Error,
+                                   "census: unknown criterion '%0'"))
+            << Name;
+        return false;
+      }
+      Selected.push_back(It->second);
+    }
+
+    if (Args.empty())
+      for (const auto &E : AllCriteria)
+        Selected.push_back(E.second);
     return true;
   }
 
   ActionType getActionType() override { return AddBeforeMainAction; }
+
+private:
+  std::vector<CriterionFn> Selected;
 };
 
 } // namespace
