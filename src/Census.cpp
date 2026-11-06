@@ -54,6 +54,11 @@ protected:
   bool ParseArgs(const CompilerInstance &CI,
                  const std::vector<std::string> &Args) override {
     for (const std::string &Name : Args) {
+      if (Name == "list") {
+        for (const auto &E : AllCriteria)
+          llvm::outs() << E.first() << "\n";
+        continue;
+      }
       auto It = AllCriteria.find(Name);
       if (It == AllCriteria.end()) {
         DiagnosticsEngine &D = CI.getDiagnostics();

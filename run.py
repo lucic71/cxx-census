@@ -66,8 +66,9 @@ def main():
     parser.add_argument("projects", nargs="*", help="projects to build (default: all)")
     parser.add_argument("-j", "--jobs", type=int, default=1,
                         help="how many projects to build at once (default: 1, serial)")
-    parser.add_argument("-c", "--criteria",
-                        help="comma-separated criteria to run (default: all)")
+    parser.add_argument("-c", "--criteria", nargs="?", const="",
+                        help="comma-separated criteria to run (default: all); "
+                             "without a value, list the supported criteria")
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -82,7 +83,6 @@ def main():
     if unknown:
         parser.error(f"unknown project: {', '.join(unknown)}")
 
-    log.info("building %d project(s), %d at a time: %s", len(projects), args.jobs, " ".join(projects))
     start = time.monotonic()
 
     if not run(["docker", "build", "-t", "census-base", str(PROJECTS / "base")], "base"):
@@ -93,6 +93,15 @@ def main():
                        " && cmake --build /census/build/plugin"), "plugin"):
         log.error("plugin failed, not building any project")
         sys.exit(1)
+
+    if args.criteria == "":
+        names = subprocess.run(
+            in_base(f"echo | $CXX -x c++ -fsyntax-only -fplugin={PLUGIN} -fplugin-arg-census-list -"),
+            check=True, capture_output=True, text=True).stdout.split()
+        print("\n".join(sorted(names)))
+        sys.exit(0)
+
+    log.info("building %d project(s), %d at a time: %s", len(projects), args.jobs, " ".join(projects))
 
     cxxflags = f"-fplugin={PLUGIN}"
     if args.criteria is not None:
