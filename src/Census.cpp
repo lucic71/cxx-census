@@ -23,7 +23,7 @@ namespace {
 class Consumer : public ASTConsumer {
 public:
   void HandleTranslationUnit(ASTContext &Ctx) override {
-    Criteria::HasInheritance(Ctx);
+    Criteria::HasBaseWithDataMembers(Ctx);
   }
 };
 

@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_library(census MODULE
   Census.cpp
-  criteria/Inheritance.cpp
+  criteria/BaseWithDataMembers.cpp
 )
 set_target_properties(census PROPERTIES PREFIX "")
 
