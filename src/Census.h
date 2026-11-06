@@ -10,6 +10,7 @@ void report(const clang::ASTContext &Ctx, llvm::StringRef Criterion,
 
 namespace Criteria {
 void HasBaseWithDataMembers(clang::ASTContext &Ctx);
+void HasNonConstCopyConstructor(clang::ASTContext &Ctx);
 } // namespace Criteria
 
 } // namespace census

@@ -27,6 +27,7 @@ using CriterionFn = void (*)(ASTContext &);
 
 const llvm::StringMap<CriterionFn> AllCriteria = {
     {"base-with-data-members", Criteria::HasBaseWithDataMembers},
+    {"non-const-copy-constructor", Criteria::HasNonConstCopyConstructor},
 };
 
 class Consumer : public ASTConsumer {

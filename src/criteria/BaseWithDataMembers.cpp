@@ -1,6 +1,7 @@
 #include <clang/AST/RecursiveASTVisitor.h>
 
 #include "Census.h"
+#include "census_lib.h"
 
 using namespace clang;
 
@@ -29,7 +30,7 @@ public:
   bool VisitCXXRecordDecl(CXXRecordDecl *D) {
     if (!D->isThisDeclarationADefinition() || D->isDependentContext())
       return true;
-    if (Ctx.getSourceManager().isInSystemHeader(D->getLocation()))
+    if (!IsUserDefinedDecl(D))
       return true;
 
     std::string Bases;
