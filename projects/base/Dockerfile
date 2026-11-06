@@ -10,7 +10,8 @@ RUN wget -qO /etc/apt/trusted.gpg.d/apt.llvm.org.asc https://apt.llvm.org/llvm-s
     && echo "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-${CLANG_VERSION} main" \
          > /etc/apt/sources.list.d/llvm.list \
     && apt-get update && apt-get install -y --no-install-recommends \
-         clang-${CLANG_VERSION} libclang-${CLANG_VERSION}-dev llvm-${CLANG_VERSION}-dev \
+         clang-${CLANG_VERSION} clang-format-${CLANG_VERSION} \
+         libclang-${CLANG_VERSION}-dev llvm-${CLANG_VERSION}-dev \
     && rm -rf /var/lib/apt/lists/*
 
 ENV CLANG_VERSION=${CLANG_VERSION}

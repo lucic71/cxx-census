@@ -39,6 +39,11 @@ def run(cmd, prefix):
     return code == 0
 
 
+def in_base(script):
+    return ["docker", "run", "--rm", "--user", f"{os.getuid()}:{os.getgid()}",
+            "-v", f"{ROOT}:/census", "census-base", "bash", "-c", script]
+
+
 def build(project):
     log.info("[%s] starting", project)
     start = time.monotonic()
@@ -82,15 +87,16 @@ def main():
         log.error("base image failed, not building any project")
         sys.exit(1)
 
-    if not run(["docker", "run", "--rm", "--user", f"{os.getuid()}:{os.getgid()}",
-                "-v", f"{ROOT}:/census", "census-base", "bash", "-c",
-                "cmake -S /census/src -B /census/build/plugin -G Ninja"
-                " && cmake --build /census/build/plugin"], "plugin"):
+    if not run(in_base("cmake -S /census/src -B /census/build/plugin -G Ninja"
+                       " && cmake --build /census/build/plugin"), "plugin"):
         log.error("plugin failed, not building any project")
         sys.exit(1)
 
     with ThreadPoolExecutor(max_workers=args.jobs) as pool:
         results = dict(zip(projects, pool.map(build, projects)))
+
+    run(in_base("find /census/src -name '*.cpp' -o -name '*.h'"
+                " | xargs clang-format-$CLANG_VERSION -i"), "format")
 
     failed = [p for p, (ok, _) in results.items() if not ok]
     log.info("summary:")
