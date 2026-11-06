@@ -2,6 +2,7 @@
 
 import argparse
 import logging
+import os
 import shlex
 import subprocess
 import sys
@@ -12,6 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 PROJECTS = ROOT / "projects"
+PLUGIN = "/census/build/plugin/census.so"
 
 log = logging.getLogger("census")
 print_lock = threading.Lock()
@@ -42,8 +44,8 @@ def build(project):
     start = time.monotonic()
     image = f"census-{project}"
     ok = run(["docker", "build", "-t", image, str(PROJECTS / project)], project) and run(
-        ["docker", "run", "--rm", "-v", f"{ROOT}:/census", image,
-         f"/census/projects/{project}/build.sh"],
+        ["docker", "run", "--rm", "-v", f"{ROOT}:/census", "-e", f"CXXFLAGS=-fplugin={PLUGIN}",
+         image, f"/census/projects/{project}/build.sh"],
         project,
     )
     elapsed = time.monotonic() - start
@@ -78,6 +80,13 @@ def main():
 
     if not run(["docker", "build", "-t", "census-base", str(PROJECTS / "base")], "base"):
         log.error("base image failed, not building any project")
+        sys.exit(1)
+
+    if not run(["docker", "run", "--rm", "--user", f"{os.getuid()}:{os.getgid()}",
+                "-v", f"{ROOT}:/census", "census-base", "bash", "-c",
+                "cmake -S /census/src -B /census/build/plugin -G Ninja"
+                " && cmake --build /census/build/plugin"], "plugin"):
+        log.error("plugin failed, not building any project")
         sys.exit(1)
 
     with ThreadPoolExecutor(max_workers=args.jobs) as pool:
