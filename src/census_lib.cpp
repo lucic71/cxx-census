@@ -9,7 +9,7 @@ using namespace clang;
 
 namespace census {
 
-bool IsUserDefinedDecl(const Decl *D) {
+bool IsInSystemHeader(const Decl *D) {
   const SourceManager &SM = D->getASTContext().getSourceManager();
   auto UseDefinition = [&](auto *Redeclarable, const Decl *Definition) {
     if (Definition) {
@@ -25,13 +25,13 @@ bool IsUserDefinedDecl(const Decl *D) {
     const FunctionDecl *Definition = nullptr;
     FD->isDefined(Definition);
     if (!UseDefinition(FD, Definition))
-      return false;
+      return true;
   } else if (const auto *VD = dyn_cast<VarDecl>(D)) {
     if (!UseDefinition(VD, VD->getDefinition()))
-      return false;
+      return true;
   } else if (const auto *TD = dyn_cast<TagDecl>(D)) {
     if (!UseDefinition(TD, TD->getDefinition()))
-      return false;
+      return true;
   }
 
   SourceLocation Loc = D->getLocation();
@@ -41,8 +41,8 @@ bool IsUserDefinedDecl(const Decl *D) {
        Spec->getSpecializationKind() == TSK_ExplicitInstantiationDefinition))
     Loc = Spec->getSpecializedTemplate()->getLocation();
 
-  return D->getBeginLoc().isValid() && !D->isImplicit() &&
-         !SM.isInSystemHeader(Loc) && !SM.isInSystemMacro(Loc);
+  return D->getBeginLoc().isInvalid() || SM.isInSystemHeader(Loc) ||
+         SM.isInSystemMacro(Loc);
 }
 
 } // namespace census

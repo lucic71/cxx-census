@@ -4,6 +4,6 @@
 
 namespace census {
 
-bool IsUserDefinedDecl(const clang::Decl *D);
+bool IsInSystemHeader(const clang::Decl *D);
 
 } // namespace census

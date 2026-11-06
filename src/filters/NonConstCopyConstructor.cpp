@@ -17,7 +17,7 @@ public:
   bool VisitCXXConstructorDecl(CXXConstructorDecl *D) {
     if (D->isDependentContext() || D != D->getCanonicalDecl())
       return true;
-    if (!IsUserDefinedDecl(D))
+    if (IsInSystemHeader(D))
       return true;
 
     unsigned Quals = 0;

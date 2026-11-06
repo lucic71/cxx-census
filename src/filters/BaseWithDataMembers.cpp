@@ -30,7 +30,7 @@ public:
   bool VisitCXXRecordDecl(CXXRecordDecl *D) {
     if (!D->isThisDeclarationADefinition() || D->isDependentContext())
       return true;
-    if (!IsUserDefinedDecl(D))
+    if (IsInSystemHeader(D))
       return true;
 
     std::string Bases;
