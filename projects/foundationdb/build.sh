@@ -1,5 +1,6 @@
 #!/bin/bash -eu
 
+export PATH=/opt/cmake/bin:$PATH
 mkdir -p "$BUILD"
 cd "$SRC/boost_1_89_0"
 ./tools/build/src/engine/build.sh --cxx="$CXX" clang

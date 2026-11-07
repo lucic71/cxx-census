@@ -1,7 +1,7 @@
 FROM census-base
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      bison flex libomp-23-dev libopenblas-dev liblapack-dev libssl-dev python3 python3-setuptools zlib1g-dev \
+      bison flex libomp-23-dev lld-23 libopenblas-dev liblapack-dev libssl-dev python3 python3-setuptools zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git init $SRC/arangodb \

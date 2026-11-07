@@ -11,4 +11,11 @@ ENV PATH=/opt/conan/bin:/usr/lib/rust-1.91/bin:/usr/lib/llvm-23/bin:$PATH
 RUN git init $SRC/memgraph \
     && git -C $SRC/memgraph remote add origin https://github.com/memgraph/memgraph.git \
     && git -C $SRC/memgraph fetch --depth 1 origin 08d2ade3c96bc2e4905594873d391eb88db72ada \
-    && git -C $SRC/memgraph checkout FETCH_HEAD
+    && git -C $SRC/memgraph checkout FETCH_HEAD \
+    && ln -s clang-23 /usr/bin/clang && ln -s clang++-23 /usr/bin/clang++
+
+RUN cd $SRC/memgraph && conan profile detect && conan config install conan_config \
+    && conan remote add memgraph-recipes $SRC/memgraph/conan_recipes -t local-recipes-index \
+    && conan graph info . -pr:h default -pr:h memgraph_linux_base -pr:b memgraph_build_profile -s build_type=Release \
+       -s os.distro=ubuntu-24.04 -o "&:bundled_toolchain=False" --lockfile-partial -c tools.build:download_source=True \
+       > /dev/null

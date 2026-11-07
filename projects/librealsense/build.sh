@@ -1,4 +1,5 @@
 #!/bin/bash -eu
 
-cmake -S "$SRC/librealsense" -B "$BUILD" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+cmake -S "$SRC/librealsense" -B "$BUILD" -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+  -DBUILD_GLSL_EXTENSIONS=OFF -DBUILD_GRAPHICAL_EXAMPLES=OFF -DBUILD_EXAMPLES=OFF
 cmake --build "$BUILD" -j "$(nproc)"

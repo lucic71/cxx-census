@@ -9,5 +9,5 @@ osd() {
 osd || { echo "census: dep opensubdiv built without plugin"; rm -rf "$BUILD/osd"; (unset CXXFLAGS; osd); }
 
 cmake -S "$SRC/openusd" -B "$BUILD/usd" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-  -DCMAKE_PREFIX_PATH="$BUILD/deps" -DPXR_BUILD_USDVIEW=OFF
+  -DCMAKE_PREFIX_PATH="$BUILD/deps" -DPXR_BUILD_USDVIEW=OFF -DPXR_BUILD_TESTS=OFF
 cmake --build "$BUILD/usd" -j "$(nproc)"

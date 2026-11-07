@@ -1,8 +1,11 @@
 FROM census-base
 
 RUN apt-get update && apt-get install -y --no-install-recommends autoconf autoconf-archive automake libtool bison flex \
-      curl zip unzip tar python3 python3-venv libapparmor-dev libsystemd-dev libssl-dev lld \
+      curl zip unzip tar python3 python3-venv libapparmor-dev libsystemd-dev libssl-dev libltdl-dev lld \
     && rm -rf /var/lib/apt/lists/*
+
+RUN wget -qO- https://github.com/Kitware/CMake/releases/download/v3.31.6/cmake-3.31.6-linux-x86_64.tar.gz \
+    | tar xz --strip-components=1 -C /usr/local
 
 RUN curl -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal
 ENV PATH=/root/.cargo/bin:$PATH
@@ -13,3 +16,5 @@ RUN git init $SRC/multipass \
     && git -C $SRC/multipass checkout FETCH_HEAD \
     && git -C $SRC/multipass submodule update --init --recursive --depth 1 --jobs 8 \
     && git -C $SRC/multipass/3rd-party/vcpkg fetch --unshallow
+
+RUN apt-get update && apt-get install -y --no-install-recommends g++-14 && rm -rf /var/lib/apt/lists/*

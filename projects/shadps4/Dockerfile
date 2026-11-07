@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       libasound2-dev libpulse-dev libopenal-dev libssl-dev zlib1g-dev libedit-dev libudev-dev libevdev-dev \
       libsdl2-dev libjack-dev libsndio-dev libvulkan-dev vulkan-validationlayers libpng-dev libx11-dev \
       libxext-dev libxrandr-dev libxcursor-dev libxi-dev libxss-dev libxtst-dev libxkbcommon-dev \
-      libwayland-dev wayland-protocols libegl-dev libdecor-0-dev python3 \
+      libwayland-dev wayland-protocols libegl-dev libdecor-0-dev python3 g++-14 libstdc++-14-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git init $SRC/shadps4 \

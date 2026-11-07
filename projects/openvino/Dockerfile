@@ -1,7 +1,7 @@
 FROM census-base
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      libtbb-dev libpugixml-dev ocl-icd-opencl-dev opencl-headers rapidjson-dev libva-dev \
+      libtbb-dev libpugixml-dev ocl-icd-opencl-dev opencl-headers libva-dev \
       libsnappy-dev python3-dev python3-pip python3-venv pybind11-dev libffi-dev nlohmann-json3-dev \
     && rm -rf /var/lib/apt/lists/*
 

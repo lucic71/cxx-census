@@ -1,6 +1,6 @@
 FROM census-base
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libjemalloc-dev \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libjemalloc-dev autoconf automake libtool \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git init $SRC/ton \

@@ -12,6 +12,6 @@ dep() {
 dep SDL -DSDL_TESTS=OFF
 dep SDL_image -DSDLIMAGE_SAMPLES=OFF
 dep SDL_mixer -DSDLMIXER_TESTS=OFF -DSDLMIXER_EXAMPLES=OFF
-cmake -S "$SRC/wesnoth" -B "$BUILD/wesnoth" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-  -DCMAKE_PREFIX_PATH="$BUILD/deps"
+CXXFLAGS="$CXXFLAGS -I$BUILD/deps/include" cmake -S "$SRC/wesnoth" -B "$BUILD/wesnoth" -G Ninja -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_PREFIX_PATH="$BUILD/deps"
 cmake --build "$BUILD/wesnoth" -j "$(nproc)"

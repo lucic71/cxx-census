@@ -1,6 +1,8 @@
 FROM census-base
 
-RUN apt-get update && apt-get install -y --no-install-recommends python3-pip perl \
+RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common gpg-agent \
+    && add-apt-repository -y ppa:ubuntu-toolchain-r/test \
+    && apt-get update && apt-get install -y --no-install-recommends libstdc++-15-dev python3-pip perl \
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install --break-system-packages --no-cache-dir conan \
     && ln -s /usr/bin/clang-23 /usr/local/bin/clang && ln -s /usr/bin/clang++-23 /usr/local/bin/clang++

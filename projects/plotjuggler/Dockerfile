@@ -21,3 +21,7 @@ RUN cd $SRC/plotjuggler && conan profile detect \
     && scripts/configure_conan_remote.sh \
     && conan graph info . -r=plotjuggler-conan -r=conancenter --lockfile=conan.lock --lockfile-partial \
        -s build_type=Release -s compiler.cppstd=20 -c tools.build:download_source=True > /dev/null
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      libglib2.0-0t64 libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 libxcb-shape0 \
+    && rm -rf /var/lib/apt/lists/*

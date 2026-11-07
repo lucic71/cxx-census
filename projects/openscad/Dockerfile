@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       libqt6opengl6-dev libqt6core5compat6-dev libqscintilla2-qt6-dev qt6-tools-dev libegl-dev \
     && rm -rf /var/lib/apt/lists/*
 
+RUN wget -qO- https://github.com/CGAL/cgal/releases/download/v6.0.1/CGAL-6.0.1.tar.xz | tar xJ -C /opt
+
 RUN git init $SRC/openscad \
     && git -C $SRC/openscad remote add origin https://github.com/openscad/openscad.git \
     && git -C $SRC/openscad fetch --depth 1 origin a81e863051c42ee04168683e945aca58d32d04a2 \

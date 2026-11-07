@@ -1,9 +1,11 @@
 #!/bin/bash -eu
 
 cd "$SRC/plotjuggler"
+echo "core.download:parallel=1" >> "$(conan config home)/global.conf"
 deps() {
   conan install . --output-folder="$BUILD/conan" --build=missing -r=plotjuggler-conan -r=conancenter \
-    --lockfile=conan.lock --lockfile-partial -s build_type=Release -s compiler.cppstd=20 "$@"
+    --lockfile=conan.lock --lockfile-partial -s build_type=Release -s compiler.cppstd=20 \
+    -c "tools.build:compiler_executables={'c':'$CC','cpp':'$CXX'}" "$@"
 }
 deps -c "tools.build:cxxflags=['$CXXFLAGS']" || { echo "census: dep conan packages built without plugin"; CXXFLAGS= deps; }
 

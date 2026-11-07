@@ -1,7 +1,7 @@
 FROM census-base
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      libcurl4-openssl-dev rapidjson-dev libyaml-cpp-dev libpcre2-dev zlib1g-dev \
+      libcurl4-openssl-dev libyaml-cpp-dev libpcre2-dev zlib1g-dev lld-$CLANG_VERSION \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git clone --depth 1 -b v4.4.0 https://github.com/ToruNiina/toml11 /tmp/toml11 \

@@ -1,7 +1,7 @@
 FROM census-base
 
 RUN dpkg --add-architecture i386 && apt-get update && apt-get install -y --no-install-recommends \
-      g++-14 gcc-14-multilib g++-14-multilib libc6-dev-i386 libgtk-3-dev libpsl-dev:i386 libssl-dev:i386 pkg-config:i386 \
+      g++-14 gcc-14-multilib g++-14-multilib libc6-dev-i386 linux-libc-dev:i386 libgtk-3-dev libpsl-dev:i386 libssl-dev:i386 pkg-config:i386 \
       curl unzip \
     && rm -rf /var/lib/apt/lists/*
 

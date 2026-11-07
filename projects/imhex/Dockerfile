@@ -1,7 +1,9 @@
 FROM census-base
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      libstdc++-14-dev libgl-dev libglu1-mesa-dev libwayland-dev libwayland-bin libxkbcommon-dev \
+RUN wget -qO /etc/apt/trusted.gpg.d/toolchain.asc 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x60C317803A41BA51845E371A1E9377A2BA9EF27F' \
+    && echo "deb http://ppa.launchpadcontent.net/ubuntu-toolchain-r/test/ubuntu noble main" > /etc/apt/sources.list.d/toolchain.list \
+    && apt-get update && apt-get install -y --no-install-recommends \
+      libstdc++-16-dev libgl-dev libglu1-mesa-dev libwayland-dev libwayland-bin libxkbcommon-dev \
       libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev libglm-dev \
       libmagic-dev libfontconfig-dev libfreetype-dev libdbus-1-dev libcurl4-gnutls-dev libgtk-3-dev \
       zlib1g-dev libbz2-dev liblzma-dev libzstd-dev liblz4-dev libssh2-1-dev libmd4c-dev \

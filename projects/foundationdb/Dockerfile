@@ -10,3 +10,5 @@ RUN git init $SRC/foundationdb \
     && git -C $SRC/foundationdb checkout FETCH_HEAD
 
 RUN curl -fsSL https://archives.boost.io/release/1.89.0/source/boost_1_89_0.tar.bz2 | tar -xj -C $SRC
+
+RUN python3 -m venv /opt/cmake && /opt/cmake/bin/pip install --no-cache-dir cmake==3.31.10

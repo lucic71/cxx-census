@@ -17,5 +17,5 @@ qjs || { echo "census: dep quickjs built without plugin"; rm -rf "$BUILD/qjs"; (
 cron || { echo "census: dep libcron built without plugin"; rm -rf "$BUILD/cron"; (unset CXXFLAGS; cron); }
 
 cmake -S "$SRC/subconverter" -B "$BUILD/subconverter" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-  -DCMAKE_PREFIX_PATH="$D"
+  -DCMAKE_PREFIX_PATH="$D" -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld
 cmake --build "$BUILD/subconverter" -j "$(nproc)"

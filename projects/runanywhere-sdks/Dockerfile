@@ -1,6 +1,6 @@
 FROM census-base
 
-RUN apt-get update && apt-get install -y --no-install-recommends libcurl4-openssl-dev libssl-dev python3 \
+RUN apt-get update && apt-get install -y --no-install-recommends libcurl4-openssl-dev libssl-dev python3 python3-venv \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git init $SRC/runanywhere-sdks \

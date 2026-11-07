@@ -4,7 +4,10 @@ FROM census-base
 
 COPY --from=dev /opt/vesoft/third-party/3.3 /opt/vesoft/third-party/3.3
 
-RUN apt-get update && apt-get install -y --no-install-recommends m4 python3 \
+RUN rm -rf /opt/vesoft/third-party/3.3/include/boost /opt/vesoft/third-party/3.3/lib/libboost_* \
+    && apt-get update && apt-get install -y --no-install-recommends m4 python3 \
+      libboost-context-dev libboost-date-time-dev libboost-filesystem-dev libboost-iostreams-dev \
+      libboost-program-options-dev libboost-regex-dev libboost-system-dev libboost-thread-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git init $SRC/nebula \

@@ -2,7 +2,7 @@
 
 T="$BUILD/triplets/x64-linux-census.cmake"
 mkdir -p "$BUILD/triplets"
-printf 'include($ENV{VCPKG_ROOT}/triplets/x64-linux.cmake)\nset(VCPKG_C_FLAGS "")\nset(VCPKG_CXX_FLAGS "%s")\n' "$CXXFLAGS" > "$T"
+printf 'include($ENV{VCPKG_ROOT}/triplets/x64-linux.cmake)\nset(VCPKG_BUILD_TYPE release)\nset(VCPKG_C_FLAGS "")\nset(VCPKG_CXX_FLAGS "%s")\n' "$CXXFLAGS" > "$T"
 deps() { env -u CXXFLAGS "$VCPKG_ROOT/vcpkg" install --x-manifest-root="$SRC/osrm-backend" \
   --x-install-root="$BUILD/vcpkg_installed" --overlay-triplets="$BUILD/triplets" --triplet=x64-linux-census \
   --clean-buildtrees-after-build --clean-packages-after-build; }
@@ -12,7 +12,8 @@ if ! deps; then
   deps
   echo "census: dep vcpkg-ports built without plugin"
 fi
-cmake -S "$SRC/osrm-backend" -B "$BUILD" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+C=$("$VCPKG_ROOT/vcpkg" fetch cmake | tail -n 1)
+"$C" -S "$SRC/osrm-backend" -B "$BUILD" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
   -DCMAKE_TOOLCHAIN_FILE="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" -DVCPKG_TARGET_TRIPLET=x64-linux-census \
   -DVCPKG_INSTALLED_DIR="$BUILD/vcpkg_installed" -DVCPKG_MANIFEST_INSTALL=OFF
-cmake --build "$BUILD" -j "$(nproc)"
+"$C" --build "$BUILD" -j "$(nproc)"

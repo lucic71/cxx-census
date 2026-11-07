@@ -1,11 +1,15 @@
 FROM census-base
 
-RUN apt-get update && apt-get install -y --no-install-recommends g++-14 file glslang-tools libcap-dev libcurl4-openssl-dev \
+RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common gpg-agent \
+    && add-apt-repository -y ppa:ubuntu-toolchain-r/test \
+    && apt-get install -y --no-install-recommends g++-15 file glslang-tools libcap-dev libcurl4-openssl-dev \
       libdrm-dev libevdev-dev libgbm-dev libminiupnpc-dev libnuma-dev libopus-dev libpipewire-0.3-dev libpulse-dev \
       libssl-dev libsystemd-dev libudev-dev libwayland-dev libx11-dev libxcb-shm0-dev libxcb-xfixes0-dev libxcb1-dev \
       libxfixes-dev libxrandr-dev libxtst-dev libvulkan-dev libva-dev python3-jinja2 python3-venv qt6-base-dev qt6-svg-dev \
       systemd-dev udev xz-utils \
     && rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update && apt-get install -y --no-install-recommends libclang-rt-23-dev && rm -rf /var/lib/apt/lists/*
 
 RUN wget -qO- https://nodejs.org/dist/v22.20.0/node-v22.20.0-linux-x64.tar.xz | tar xJ --strip-components=1 -C /usr/local
 

@@ -5,7 +5,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       libboost-dev libboost-filesystem-dev libboost-program-options-dev libboost-date-time-dev \
       libboost-iostreams-dev libboost-locale-dev libboost-thread-dev qt6-base-dev qt6-base-dev-tools qt6-tools-dev \
       qt6-tools-dev-tools qt6-l10n-tools qt6-svg-dev libtbb-dev libluajit-5.1-dev liblzma-dev libsqlite3-dev \
-      libminizip-dev libsquish-dev libfmt-dev libcurl4-openssl-dev \
+      libminizip-dev libsquish-dev libfmt-dev libcurl4-openssl-dev gettext \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /opt/onnxruntime \

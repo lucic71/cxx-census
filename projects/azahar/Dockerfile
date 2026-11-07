@@ -4,6 +4,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
       nasm python3-pip libgl-dev libegl-dev libxkbcommon-dev libfontconfig1 libfreetype6 libdbus-1-dev \
       libglib2.0-0 libx11-xcb1 libxcb-cursor0 libxcb-icccm4 libxcb-keysyms1 libxcb-shape0 \
       libxrender1 libxi6 libx11-dev libxext-dev libasound2-dev libpulse-dev libudev-dev \
+      qt6-base-dev qt6-base-private-dev qt6-multimedia-dev qt6-tools-dev qt6-tools-dev-tools qt6-l10n-tools linguist-qt6 \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git clone --depth 1 -b n7.1.1 https://github.com/FFmpeg/FFmpeg.git $SRC/ffmpeg

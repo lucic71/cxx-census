@@ -1,6 +1,9 @@
 FROM census-base
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libboost-all-dev libc-ares-dev libcrypto++-dev libfmt-dev libgnutls28-dev libhwloc-dev liblz4-dev libnuma-dev libpciaccess-dev libprotobuf-dev libsctp-dev libssl-dev libtool liburing-dev libxml2-dev libyaml-cpp-dev meson openssl protobuf-compiler python3 python3-pyelftools python3-yaml ragel liblttng-ust-dev xfslibs-dev libudev-dev libunistring-dev libzstd-dev \
+RUN wget -qO /etc/apt/trusted.gpg.d/toolchain.asc "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x1E9377A2BA9EF27F" \
+    && echo "deb https://ppa.launchpadcontent.net/ubuntu-toolchain-r/test/ubuntu noble main" > /etc/apt/sources.list.d/toolchain.list
+
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends libstdc++-15-dev libboost-all-dev libc-ares-dev libcrypto++-dev libfmt-dev libgnutls28-dev libhwloc-dev liblz4-dev libnuma-dev libpciaccess-dev libprotobuf-dev libsctp-dev libssl-dev libtool liburing-dev libxml2-dev libyaml-cpp-dev meson openssl protobuf-compiler python3 python3-pyelftools python3-yaml ragel liblttng-ust-dev xfslibs-dev libudev-dev libunistring-dev libzstd-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN git init $SRC/seastar \

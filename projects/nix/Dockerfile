@@ -3,7 +3,7 @@ FROM census-base
 RUN apt-get update && apt-get install -y --no-install-recommends \
       bison flex python3-pip libarchive-dev libbrotli-dev libsodium-dev libzstd-dev libssl-dev \
       libsqlite3-dev nlohmann-json3-dev libseccomp-dev libgc-dev libtoml11-dev liblowdown-dev \
-      libeditline-dev libcpuid-dev libgtest-dev libgmock-dev librapidcheck-dev libnghttp2-dev \
+      libreadline-dev libcpuid-dev libnghttp2-dev libc++-23-dev libc++abi-23-dev \
       libpsl-dev zlib1g-dev libbz2-dev liblzma-dev libssh2-1-dev \
     && rm -rf /var/lib/apt/lists/* \
     && pip3 install --break-system-packages meson==1.9.1
