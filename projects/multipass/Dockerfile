@@ -17,4 +17,6 @@ RUN git init $SRC/multipass \
     && git -C $SRC/multipass submodule update --init --recursive --depth 1 --jobs 8 \
     && git -C $SRC/multipass/3rd-party/vcpkg fetch --unshallow
 
-RUN apt-get update && apt-get install -y --no-install-recommends g++-14 && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends software-properties-common gpg-agent \
+    && add-apt-repository -y ppa:ubuntu-toolchain-r/test \
+    && apt-get install -y --no-install-recommends g++-15 && rm -rf /var/lib/apt/lists/*

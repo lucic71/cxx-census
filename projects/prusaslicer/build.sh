@@ -2,7 +2,7 @@
 
 export LC_ALL=C.UTF-8
 deps() {
-  cmake -S "$SRC/prusaslicer/deps" -B "$BUILD/deps" -DCMAKE_BUILD_TYPE=Release -DDEP_MAX_THREADS="$(nproc)" \
+  cmake -S "$SRC/prusaslicer/deps" -B "$BUILD/deps" -DCMAKE_BUILD_TYPE=Release -DDEP_MAX_THREADS="$(nproc)" -DPrusaSlicer_deps_PLATFORM_PACKAGES="GMP;MPFR" \
     -DCMAKE_CXX_FLAGS_RELEASE="-O3 -DNDEBUG $1" && cmake --build "$BUILD/deps"
 }
 deps "$CXXFLAGS" || { rm -rf "$BUILD/deps"; echo "census: dep prusaslicer-deps built without plugin"; (unset CXXFLAGS; deps ""); }

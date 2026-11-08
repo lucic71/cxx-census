@@ -18,3 +18,6 @@ RUN git init $SRC/rpcs3 \
     && git -C $SRC/rpcs3 fetch --depth 1 origin eee3f0f7c285f2b8aa18fec278a2146c5cd874eb \
     && git -C $SRC/rpcs3 checkout FETCH_HEAD \
     && git -C $SRC/rpcs3 -c submodule.3rdparty/llvm/llvm.update=none submodule update --init --recursive --depth 1
+
+RUN apt-get update && apt-get install -y --no-install-recommends libfontconfig1 libfreetype6 \
+    && rm -rf /var/lib/apt/lists/*
