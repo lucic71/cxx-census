@@ -1,4 +1,5 @@
 #include <clang/AST/Attr.h>
+#include <clang/AST/Expr.h>
 #include <clang/AST/RecursiveASTVisitor.h>
 
 #include "Census.h"
@@ -9,9 +10,7 @@ using namespace clang;
 namespace census {
 namespace {
 
-bool isVector(QualType T) {
-  return T->isVectorType() || T->isExtVectorType();
-}
+bool isVector(QualType T) { return T->isVectorType() || T->isExtVectorType(); }
 
 bool isStdSimd(QualType T) {
   const CXXRecordDecl *RD = T->getAsCXXRecordDecl();
@@ -48,9 +47,25 @@ public:
     return true;
   }
 
+  bool VisitShuffleVectorExpr(ShuffleVectorExpr *E) {
+    if (!SM.isInSystemHeader(SM.getExpansionLoc(E->getBeginLoc())))
+      report(Ctx, "simd", E->getBeginLoc(),
+             "intrinsic __builtin_shufflevector");
+    return true;
+  }
+
+  bool VisitConvertVectorExpr(ConvertVectorExpr *E) {
+    if (!SM.isInSystemHeader(SM.getExpansionLoc(E->getBeginLoc())))
+      report(Ctx, "simd", E->getBeginLoc(),
+             "intrinsic __builtin_convertvector");
+    return true;
+  }
+
   bool VisitCallExpr(CallExpr *E) {
     const FunctionDecl *FD = E->getDirectCallee();
     if (!FD || SM.isInSystemHeader(SM.getExpansionLoc(E->getBeginLoc())))
+      return true;
+    if (!FD->getDeclName().isIdentifier())
       return true;
     StringRef Name = FD->getName();
     bool Intrinsic = FD->getBuiltinID() && isVectorBuiltin(Name);

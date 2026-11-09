@@ -1,3 +1,5 @@
+#include <typeinfo>
+
 struct PureBase {
   virtual ~PureBase() = default;
   virtual int f() const = 0;

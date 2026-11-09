@@ -92,9 +92,17 @@ public:
     return true;
   }
 
+  bool VisitCXXFunctionalCastExpr(CXXFunctionalCastExpr *E) {
+    if (!SM.isInSystemHeader(SM.getExpansionLoc(E->getBeginLoc())))
+      checkType(E->getType(), E->getBeginLoc());
+    return true;
+  }
+
   bool VisitCallExpr(CallExpr *E) {
     const FunctionDecl *FD = E->getDirectCallee();
     if (!FD || SM.isInSystemHeader(SM.getExpansionLoc(E->getBeginLoc())))
+      return true;
+    if (!FD->getDeclName().isIdentifier())
       return true;
     std::string Name = FD->getQualifiedNameAsString();
     StringRef Base = FD->getName();
