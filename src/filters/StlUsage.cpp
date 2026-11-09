@@ -107,6 +107,8 @@ public:
   }
 
   bool VisitMemberExpr(MemberExpr *E) {
+    SourceLocation Loc =
+        E->getMemberLoc().isValid() ? E->getMemberLoc() : E->getBeginLoc();
     const ValueDecl *Member = E->getMemberDecl();
     const auto *Owner = dyn_cast<RecordDecl>(Member->getDeclContext());
     QualType Object = E->getBase()->IgnoreParenImpCasts()->getType();
@@ -115,9 +117,9 @@ public:
     const RecordDecl *RD = Object->getAsRecordDecl();
     if (Owner && RD && RD != Owner && Owner->getName().starts_with("_") &&
         IsInSystemHeader(RD))
-      add(memberPath(RD, Member), E->getMemberLoc());
+      add(memberPath(RD, Member), Loc);
     else
-      add(Member, E->getMemberLoc());
+      add(Member, Loc);
     return true;
   }
 
