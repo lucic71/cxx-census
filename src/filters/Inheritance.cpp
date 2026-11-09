@@ -1,3 +1,4 @@
+#include <clang/AST/DeclTemplate.h>
 #include <clang/AST/ExprCXX.h>
 #include <clang/AST/RecursiveASTVisitor.h>
 
@@ -31,12 +32,21 @@ bool isEmptyBase(const CXXRecordDecl *RD) {
   return true;
 }
 
+bool isTagBase(const CXXRecordDecl *RD) {
+  const auto *Spec = dyn_cast<ClassTemplateSpecializationDecl>(RD);
+  if (!Spec)
+    return false;
+  StringRef Name = Spec->getSpecializedTemplate()->getName();
+  return (Name == "integral_constant" || Name == "bool_constant") &&
+         IsInSystemHeader(RD);
+}
+
 std::string baseIssues(const CXXBaseSpecifier &B) {
   const CXXRecordDecl *Base = B.getType()->getAsCXXRecordDecl();
   if (!Base || !Base->getDefinition())
     return "";
   Base = Base->getDefinition();
-  if (isEmptyBase(Base))
+  if (isEmptyBase(Base) || isTagBase(Base))
     return "";
 
   std::string Issues;

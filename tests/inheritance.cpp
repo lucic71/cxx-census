@@ -41,6 +41,8 @@ struct DerivedNonAbstract : NonAbstract {};
 struct Plain {};
 struct DerivedPlain : private Plain {};
 
+#include <type_traits>
+struct Tag : std::true_type {};
 struct Opaque {};
 struct FromOpaque : Opaque {
   int X;
