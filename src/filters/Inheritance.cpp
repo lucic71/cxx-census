@@ -114,6 +114,8 @@ public:
   }
 
   bool VisitCXXTypeidExpr(CXXTypeidExpr *E) {
+    if (!E->isPotentiallyEvaluated())
+      return true;
     reportExpr("typeid", E->getBeginLoc(),
                E->isTypeOperand()
                    ? E->getTypeOperand(Ctx).getAsString()

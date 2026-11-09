@@ -85,5 +85,6 @@ int uses(PureBase *p, NonAbstract &r) {
   (void)rr;
   (void)typeid(*p);
   (void)typeid(Supported);
+  (void)typeid(p);
   return d ? 1 : 0;
 }
