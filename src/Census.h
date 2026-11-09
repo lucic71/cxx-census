@@ -15,6 +15,8 @@ void HasExceptions(clang::ASTContext &Ctx);
 void HasConcurrency(clang::ASTContext &Ctx);
 void HasSimd(clang::ASTContext &Ctx);
 void HasAsm(clang::ASTContext &Ctx);
+void HasPointerByteRepr(clang::ASTContext &Ctx);
+void HasPlacementNew(clang::ASTContext &Ctx);
 } // namespace Filters
 
 } // namespace census

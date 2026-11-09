@@ -20,6 +20,8 @@ add_library(census MODULE
   filters/Concurrency.cpp
   filters/Simd.cpp
   filters/Asm.cpp
+  filters/PointerByteRepr.cpp
+  filters/PlacementNew.cpp
 )
 set_target_properties(census PROPERTIES PREFIX "")
 
