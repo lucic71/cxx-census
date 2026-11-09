@@ -24,6 +24,7 @@ add_library(census MODULE
   filters/PlacementNew.cpp
   filters/DynamicLoading.cpp
   filters/StlUsage.cpp
+  filters/MemberPointer.cpp
 )
 set_target_properties(census PROPERTIES PREFIX "")
 

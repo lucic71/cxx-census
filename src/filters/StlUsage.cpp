@@ -83,6 +83,7 @@ public:
   explicit Visitor(ASTContext &Ctx) : Ctx(Ctx), SM(Ctx.getSourceManager()) {}
 
   bool shouldVisitTemplateInstantiations() const { return true; }
+  bool shouldVisitImplicitCode() const { return true; }
 
   bool TraverseDecl(Decl *D) {
     if (D && !isa<TranslationUnitDecl>(D) &&
