@@ -22,14 +22,20 @@ public:
       return true;
 
     unsigned Quals = 0;
-    if (!D->isCopyConstructor(Quals) || (Quals & Qualifiers::Const))
+    if (!D->isCopyConstructor(Quals) || (Quals & Qualifiers::Const) ||
+        D->isDeleted())
       return true;
+    for (const CXXConstructorDecl *Other : D->getParent()->ctors()) {
+      unsigned OtherQuals = 0;
+      if (Other != D && !Other->isDeleted() &&
+          Other->isCopyConstructor(OtherQuals) &&
+          (OtherQuals & Qualifiers::Const))
+        return true;
+    }
 
     std::string Detail = D->getParent()->getQualifiedNameAsString() + "(" +
                          D->getParamDecl(0)->getType().getAsString() + ")";
-    if (D->isDeleted())
-      Detail += " = delete";
-    else if (D->isExplicitlyDefaulted())
+    if (D->isExplicitlyDefaulted())
       Detail += " = default";
     if (D->isImplicit())
       Detail += " implicit";
