@@ -22,6 +22,21 @@ struct Holder {
 };
 WithDtor Holder::Member;
 
+struct Nested {
+  int X;
+  WithDtor Inner;
+};
+Nested N;
+
+struct Derived : WithDtor {};
+Derived D;
+
+struct Defaulted {
+  ~Defaulted() = default;
+  std::string S;
+};
+Defaulted Def;
+
 void f() {
   static WithDtor Local;
   WithDtor Automatic;
