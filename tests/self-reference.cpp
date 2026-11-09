@@ -8,6 +8,17 @@ struct Owner {
   Owner() : Head(reinterpret_cast<Node *>(this)) {}
 };
 
+struct Selfish {
+  Selfish *This = this;
+  int A = 1;
+  int B = A + 1;
+  int C;
+  int D;
+  int E;
+  Selfish(int a, int b) : C(A), D(compute()), E(b) {}
+  int compute() const { return 3; }
+};
+
 struct Plain {
   int X;
   Plain() : X(1) {}

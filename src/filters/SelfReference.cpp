@@ -20,15 +20,24 @@ bool references(const Stmt *S, const VarDecl *D) {
   return false;
 }
 
-bool usesThis(const Stmt *S) {
+void selfUses(const Stmt *S, std::string &Uses) {
   if (!S)
-    return false;
-  if (isa<CXXThisExpr>(S))
-    return true;
+    return;
+  if (const auto *M = dyn_cast<MemberExpr>(S);
+      M && isa<CXXThisExpr>(M->getBase()->IgnoreParenImpCasts())) {
+    Uses += isa<CXXMethodDecl>(M->getMemberDecl()) ? " calls " : " reads ";
+    Uses += M->getMemberDecl()->getNameAsString();
+    for (const Stmt *Child : S->children())
+      if (Child != M->getBase())
+        selfUses(Child, Uses);
+    return;
+  }
+  if (isa<CXXThisExpr>(S)) {
+    Uses += " this";
+    return;
+  }
   for (const Stmt *Child : S->children())
-    if (usesThis(Child))
-      return true;
-  return false;
+    selfUses(Child, Uses);
 }
 
 class Visitor : public RecursiveASTVisitor<Visitor> {
@@ -54,11 +63,28 @@ public:
     if (!D->isThisDeclarationADefinition() || D->isDependentContext() ||
         IsInSystemHeader(D))
       return true;
-    for (const CXXCtorInitializer *Init : D->inits())
-      if (Init->isWritten() && usesThis(Init->getInit()))
+    for (const CXXCtorInitializer *Init : D->inits()) {
+      if (!Init->isWritten())
+        continue;
+      std::string Uses;
+      selfUses(Init->getInit(), Uses);
+      if (!Uses.empty())
         report(Ctx, "self-reference", Init->getSourceLocation(),
                D->getParent()->getQualifiedNameAsString() +
-                   " passes this in a member initializer");
+                   " member initializer" + Uses);
+    }
+    return true;
+  }
+
+  bool VisitFieldDecl(FieldDecl *D) {
+    if (!D->hasInClassInitializer() || D->getParent()->isDependentContext() ||
+        IsInSystemHeader(D))
+      return true;
+    std::string Uses;
+    selfUses(D->getInClassInitializer(), Uses);
+    if (!Uses.empty())
+      report(Ctx, "self-reference", D->getLocation(),
+             D->getQualifiedNameAsString() + " default initializer" + Uses);
     return true;
   }
 
