@@ -1,5 +1,6 @@
 #include <cstdint>
 #include <cstdlib>
+#include <cstring>
 
 struct Node {
   int Value;
@@ -38,4 +39,17 @@ uintptr_t casts(int *p) {
   bool b = p;
   (void)back; (void)fromLiteral; (void)null; (void)b;
   return addr + s;
+}
+
+void callback(void *);
+
+void bytes(Node &node, Plain &plain, char *buffer) {
+  Node other;
+  std::memcpy(&node, &other, sizeof(Node));
+  char *raw = reinterpret_cast<char *>(&node);
+  Node *parsed = (Node *)buffer;
+  char *plainRaw = reinterpret_cast<char *>(&plain);
+  Plain *plainParsed = (Plain *)buffer;
+  callback((void *)&node);
+  (void)raw; (void)parsed; (void)plainRaw; (void)plainParsed;
 }

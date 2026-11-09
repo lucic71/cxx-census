@@ -31,6 +31,13 @@ bool hasPointerFields(const CXXRecordDecl *RD,
   return false;
 }
 
+bool isBytePointer(QualType T) {
+  if (!T->isPointerType())
+    return false;
+  QualType P = T->getPointeeType().getUnqualifiedType();
+  return P->isCharType() || P->isVoidType() || P->isStdByteType();
+}
+
 class Visitor : public RecursiveASTVisitor<Visitor> {
 public:
   explicit Visitor(ASTContext &Ctx) : Ctx(Ctx), SM(Ctx.getSourceManager()) {}
@@ -48,24 +55,31 @@ public:
       report(Ctx, "pointer-byterepr", E->getBeginLoc(),
              "ptr-to-int " + From.getAsString() + " -> " + To.getAsString());
 
-    if (!isa<ExplicitCastExpr>(E) || !To->isPointerType())
+    if (!To->isPointerType() || !From->isPointerType())
+      return true;
+    if (isBytePointer(To) && !isBytePointer(From))
+      return reportBytes(E, From, "byte-cast");
+    if (!isBytePointer(From) || isBytePointer(To))
       return true;
     const auto *Call =
         dyn_cast<CallExpr>(E->getSubExpr()->IgnoreParenImpCasts());
     const FunctionDecl *FD = Call ? Call->getDirectCallee() : nullptr;
-    if (!FD || !FD->getDeclName().isIdentifier() ||
-        !Allocators.contains(FD->getName()))
-      return true;
-    QualType Pointee = Ctx.getBaseElementType(To->getPointeeType());
-    llvm::SmallPtrSet<const CXXRecordDecl *, 8> Seen;
-    if (hasPointerFields(Pointee->getAsCXXRecordDecl(), Seen))
-      report(Ctx, "pointer-byterepr", E->getBeginLoc(),
-             FD->getName().str() + " struct-with-pointers " +
-                 Pointee.getAsString());
-    return true;
+    if (FD && FD->getDeclName().isIdentifier() &&
+        Allocators.contains(FD->getName()))
+      return reportBytes(E, To, FD->getName());
+    return reportBytes(E, To, "bytes-to-struct");
   }
 
 private:
+  bool reportBytes(const CastExpr *E, QualType T, StringRef What) {
+    QualType Pointee = Ctx.getBaseElementType(T->getPointeeType());
+    llvm::SmallPtrSet<const CXXRecordDecl *, 8> Seen;
+    if (hasPointerFields(Pointee->getAsCXXRecordDecl(), Seen))
+      report(Ctx, "pointer-byterepr", E->getBeginLoc(),
+             What.str() + " struct-with-pointers " + Pointee.getAsString());
+    return true;
+  }
+
   ASTContext &Ctx;
   const SourceManager &SM;
 };
