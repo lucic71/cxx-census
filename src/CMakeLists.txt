@@ -25,6 +25,9 @@ add_library(census MODULE
   filters/DynamicLoading.cpp
   filters/StlUsage.cpp
   filters/MemberPointer.cpp
+  filters/SelfReference.cpp
+  filters/Bitfield.cpp
+  filters/GlobalDestructor.cpp
 )
 set_target_properties(census PROPERTIES PREFIX "")
 

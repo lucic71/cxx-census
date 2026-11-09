@@ -20,6 +20,9 @@ void HasPlacementNew(clang::ASTContext &Ctx);
 void HasDynamicLoading(clang::ASTContext &Ctx);
 void HasStlUsage(clang::ASTContext &Ctx);
 void HasMemberPointer(clang::ASTContext &Ctx);
+void HasSelfReference(clang::ASTContext &Ctx);
+void HasBitfield(clang::ASTContext &Ctx);
+void HasGlobalDestructor(clang::ASTContext &Ctx);
 } // namespace Filters
 
 } // namespace census
