@@ -26,8 +26,12 @@ namespace {
 using FilterFn = void (*)(ASTContext &);
 
 const llvm::StringMap<FilterFn> AllFilters = {
-    {"base-with-data-members", Filters::HasBaseWithDataMembers},
     {"non-const-copy-constructor", Filters::HasNonConstCopyConstructor},
+    {"inheritance", Filters::HasInheritance},
+    {"exceptions", Filters::HasExceptions},
+    {"concurrency", Filters::HasConcurrency},
+    {"simd", Filters::HasSimd},
+    {"asm", Filters::HasAsm},
 };
 
 class Consumer : public ASTConsumer {

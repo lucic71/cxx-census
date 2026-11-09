@@ -9,8 +9,12 @@ void report(const clang::ASTContext &Ctx, llvm::StringRef Filter,
             clang::SourceLocation Loc, llvm::StringRef Detail);
 
 namespace Filters {
-void HasBaseWithDataMembers(clang::ASTContext &Ctx);
 void HasNonConstCopyConstructor(clang::ASTContext &Ctx);
+void HasInheritance(clang::ASTContext &Ctx);
+void HasExceptions(clang::ASTContext &Ctx);
+void HasConcurrency(clang::ASTContext &Ctx);
+void HasSimd(clang::ASTContext &Ctx);
+void HasAsm(clang::ASTContext &Ctx);
 } // namespace Filters
 
 } // namespace census
