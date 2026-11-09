@@ -35,7 +35,11 @@ bool isBytePointer(QualType T) {
   if (!T->isPointerType())
     return false;
   QualType P = T->getPointeeType().getUnqualifiedType();
-  return P->isCharType() || P->isVoidType() || P->isStdByteType();
+  return P->isCharType() || P->isStdByteType();
+}
+
+bool isVoidPointer(QualType T) {
+  return T->isPointerType() && T->getPointeeType()->isVoidType();
 }
 
 class Visitor : public RecursiveASTVisitor<Visitor> {
@@ -66,17 +70,20 @@ public:
 
     if (!To->isPointerType() || !From->isPointerType())
       return true;
-    if (isBytePointer(To) && !isBytePointer(From))
-      return reportBytes(E, From, "byte-cast");
-    if (!isBytePointer(From) || isBytePointer(To))
+    if (isVoidPointer(From)) {
+      const auto *Call =
+          dyn_cast<CallExpr>(E->getSubExpr()->IgnoreParenImpCasts());
+      const FunctionDecl *FD = Call ? Call->getDirectCallee() : nullptr;
+      if (FD && FD->getDeclName().isIdentifier() &&
+          Allocators.contains(FD->getName()))
+        return reportBytes(E, To, FD->getName());
       return true;
-    const auto *Call =
-        dyn_cast<CallExpr>(E->getSubExpr()->IgnoreParenImpCasts());
-    const FunctionDecl *FD = Call ? Call->getDirectCallee() : nullptr;
-    if (FD && FD->getDeclName().isIdentifier() &&
-        Allocators.contains(FD->getName()))
-      return reportBytes(E, To, FD->getName());
-    return reportBytes(E, To, "bytes-to-struct");
+    }
+    if (isBytePointer(To) && !isBytePointer(From) && !isVoidPointer(From))
+      return reportBytes(E, From, "byte-cast");
+    if (isBytePointer(From) && !isBytePointer(To) && !isVoidPointer(To))
+      return reportBytes(E, To, "bytes-to-struct");
+    return true;
   }
 
 private:

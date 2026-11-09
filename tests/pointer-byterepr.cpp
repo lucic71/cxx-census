@@ -30,6 +30,13 @@ void allocs() {
   free(n); free(w); free(d); free(p); free(i); free(v);
 }
 
+void erase(Node *n, void (*cb)(void *)) {
+  cb(n);
+  void *v = n;
+  Node *back = static_cast<Node *>(v);
+  (void)back;
+}
+
 uintptr_t casts(int *p) {
   uintptr_t addr = (uintptr_t)p;
   intptr_t s = reinterpret_cast<intptr_t>(p);
