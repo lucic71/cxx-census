@@ -41,6 +41,11 @@ struct DerivedNonAbstract : NonAbstract {};
 struct Plain {};
 struct DerivedPlain : private Plain {};
 
+struct Opaque {};
+struct FromOpaque : Opaque {
+  int X;
+};
+
 struct A {
   virtual void a() = 0;
 };

@@ -22,11 +22,22 @@ bool hasDataMembers(const CXXRecordDecl *RD) {
   return false;
 }
 
+bool isEmptyBase(const CXXRecordDecl *RD) {
+  if (!RD->isEmpty() || RD->getNumBases() != 0)
+    return false;
+  for (const CXXMethodDecl *M : RD->methods())
+    if (!M->isImplicit())
+      return false;
+  return true;
+}
+
 std::string baseIssues(const CXXBaseSpecifier &B) {
   const CXXRecordDecl *Base = B.getType()->getAsCXXRecordDecl();
   if (!Base || !Base->getDefinition())
     return "";
   Base = Base->getDefinition();
+  if (isEmptyBase(Base))
+    return "";
 
   std::string Issues;
   auto Add = [&](StringRef Issue) { Issues += " " + Issue.str(); };
