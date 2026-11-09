@@ -22,6 +22,7 @@ add_library(census MODULE
   filters/Asm.cpp
   filters/PointerByteRepr.cpp
   filters/PlacementNew.cpp
+  filters/DynamicLoading.cpp
 )
 set_target_properties(census PROPERTIES PREFIX "")
 

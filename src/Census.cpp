@@ -34,6 +34,7 @@ const llvm::StringMap<FilterFn> AllFilters = {
     {"asm", Filters::HasAsm},
     {"pointer-byterepr", Filters::HasPointerByteRepr},
     {"placement-new", Filters::HasPlacementNew},
+    {"dynamic-loading", Filters::HasDynamicLoading},
 };
 
 class Consumer : public ASTConsumer {
