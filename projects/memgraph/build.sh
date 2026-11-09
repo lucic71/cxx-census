@@ -12,5 +12,5 @@ conan install . --build=missing -pr:h default -pr:h memgraph_linux_base -pr:b me
   -c:a tools.build:compiler_executables='{"c": "clang-23", "cpp": "clang++-23"}' -c:a tools.build:cxxflags="$F" \
   -c:a 'aws-sdk-cpp/*:tools.cmake.cmaketoolchain:extra_variables={"AWS_SDK_WARNINGS_ARE_ERRORS": "OFF"}'
 source build/generators/conanbuild.sh
-cmake --preset conan-release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DMG_TOOLCHAIN_ROOT=/usr
+cmake --preset conan-release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DMG_TOOLCHAIN_ROOT=/usr -DMG_ENABLE_TESTING=OFF
 cmake --build --preset conan-release -j "$(nproc)"
