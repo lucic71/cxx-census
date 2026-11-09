@@ -8,6 +8,7 @@
 #include <thread>
 
 thread_local int Counter;
+std::atomic<int> Fine;
 
 struct Holder {
   std::mutex M;

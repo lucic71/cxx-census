@@ -28,9 +28,6 @@ const llvm::StringSet<> StdTypes = {
     "once_flag",
     "condition_variable",
     "condition_variable_any",
-    "atomic",
-    "atomic_ref",
-    "atomic_flag",
     "future",
     "shared_future",
     "promise",
@@ -71,9 +68,6 @@ public:
   bool VisitVarDecl(VarDecl *D) {
     if (IsInSystemHeader(D))
       return true;
-    if (D->getTLSKind() != VarDecl::TLS_None)
-      report(Ctx, "concurrency", D->getLocation(),
-             "thread_local " + D->getQualifiedNameAsString());
     checkType(D->getType(), D->getLocation());
     return true;
   }
