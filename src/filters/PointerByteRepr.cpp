@@ -44,8 +44,17 @@ public:
 
   bool shouldVisitTemplateInstantiations() const { return true; }
 
+  bool VisitCallExpr(CallExpr *E) {
+    const FunctionDecl *FD = E->getDirectCallee();
+    if (FD && FD->getDeclName().isIdentifier() && FD->getName() == "free")
+      for (const Expr *Arg : E->arguments())
+        Freed.insert(Arg);
+    return true;
+  }
+
   bool VisitCastExpr(CastExpr *E) {
-    if (SM.isInSystemHeader(SM.getExpansionLoc(E->getBeginLoc())))
+    if (Freed.count(E) ||
+        SM.isInSystemHeader(SM.getExpansionLoc(E->getBeginLoc())))
       return true;
     QualType From = E->getSubExpr()->getType(), To = E->getType();
     if (E->getCastKind() == CK_IntegralToPointer)
@@ -71,6 +80,7 @@ public:
   }
 
 private:
+  llvm::SmallPtrSet<const Expr *, 8> Freed;
   bool reportBytes(const CastExpr *E, QualType T, StringRef What) {
     QualType Pointee = Ctx.getBaseElementType(T->getPointeeType());
     llvm::SmallPtrSet<const CXXRecordDecl *, 8> Seen;
