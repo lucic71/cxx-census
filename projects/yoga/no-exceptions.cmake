@@ -1,0 +1,17 @@
+include_guard(GLOBAL)
+
+function(yoga_no_exceptions dir)
+  get_property(targets DIRECTORY ${dir} PROPERTY BUILDSYSTEM_TARGETS)
+  foreach(target IN LISTS targets)
+    get_target_property(type ${target} TYPE)
+    if(type MATCHES "^(EXECUTABLE|STATIC_LIBRARY|SHARED_LIBRARY|MODULE_LIBRARY|OBJECT_LIBRARY)$")
+      target_compile_options(${target} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-fno-exceptions>)
+    endif()
+  endforeach()
+  get_property(subdirs DIRECTORY ${dir} PROPERTY SUBDIRECTORIES)
+  foreach(subdir IN LISTS subdirs)
+    yoga_no_exceptions(${subdir})
+  endforeach()
+endfunction()
+
+cmake_language(DEFER DIRECTORY ${CMAKE_SOURCE_DIR} CALL yoga_no_exceptions ${CMAKE_SOURCE_DIR})
