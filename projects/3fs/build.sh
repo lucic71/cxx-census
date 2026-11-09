@@ -11,7 +11,7 @@ for a; do [ "$a" = -fcoroutines-ts ] || args+=("$a"); done
 exec clang++-23 "${args[@]}" -Wno-error
 W
 chmod +x "$BUILD/clang++"
-export CXX="$BUILD/clang++" CXXFLAGS="$CXXFLAGS -DFMT_CONSTEVAL= -include cstdint -Wno-error=extraneous-template-head" CPATH="$BUILD/deps/include" \
+export CXX="$BUILD/clang++" CXXFLAGS="$CXXFLAGS -DFMT_CONSTEVAL= -include cstdint -include fstream -Wno-error=extraneous-template-head -Wno-error=missing-template-arg-list-after-template-kw" CPATH="$BUILD/deps/include" \
   LIBRARY_PATH="$BUILD/deps/lib" LD_LIBRARY_PATH="$BUILD/deps/lib"
 cmake -S "$SRC/3fs" -B "$BUILD" -G Ninja -DCMAKE_BUILD_TYPE=Release -DSHUFFLE_METHOD=g++11 -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 cmake --build "$BUILD" -j "$(nproc)"
