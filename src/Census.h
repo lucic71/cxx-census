@@ -18,6 +18,7 @@ void HasAsm(clang::ASTContext &Ctx);
 void HasPointerByteRepr(clang::ASTContext &Ctx);
 void HasPlacementNew(clang::ASTContext &Ctx);
 void HasDynamicLoading(clang::ASTContext &Ctx);
+void HasStlUsage(clang::ASTContext &Ctx);
 } // namespace Filters
 
 } // namespace census
