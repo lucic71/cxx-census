@@ -60,3 +60,13 @@ void bytes(Node &node, Plain &plain, char *buffer) {
   callback((void *)&node);
   (void)raw; (void)parsed; (void)plainRaw; (void)plainParsed;
 }
+
+union Holder {
+  long Int;
+  Node *Map;
+};
+
+union Plain2 {
+  int A;
+  float B;
+};

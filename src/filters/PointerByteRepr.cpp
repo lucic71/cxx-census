@@ -56,6 +56,17 @@ public:
     return true;
   }
 
+  bool VisitCXXRecordDecl(CXXRecordDecl *D) {
+    if (!D->isUnion() || !D->isThisDeclarationADefinition() ||
+        D->isDependentContext() || IsInSystemHeader(D))
+      return true;
+    llvm::SmallPtrSet<const CXXRecordDecl *, 8> Seen;
+    if (hasPointerFields(D, Seen))
+      report(Ctx, "pointer-byterepr", D->getLocation(),
+             "union-with-pointers " + D->getQualifiedNameAsString());
+    return true;
+  }
+
   bool VisitCastExpr(CastExpr *E) {
     if (Freed.count(E) ||
         SM.isInSystemHeader(SM.getExpansionLoc(E->getBeginLoc())))
