@@ -102,7 +102,26 @@ public:
   }
 
   bool VisitDeclRefExpr(DeclRefExpr *E) {
+    if (const auto *FD = dyn_cast<FunctionDecl>(E->getDecl());
+        FD && FD->isOverloadedOperator() && !isa<CXXMethodDecl>(FD))
+      return true;
     add(E->getDecl(), E->getLocation());
+    return true;
+  }
+
+  bool VisitCXXOperatorCallExpr(CXXOperatorCallExpr *E) {
+    const auto *FD = dyn_cast_or_null<FunctionDecl>(E->getCalleeDecl());
+    if (!FD || isa<CXXMethodDecl>(FD) || !IsInSystemHeader(FD))
+      return true;
+    for (const Expr *Arg : E->arguments()) {
+      const RecordDecl *RD =
+          Arg->IgnoreParenImpCasts()->getType()->getAsRecordDecl();
+      if (RD && IsInSystemHeader(RD)) {
+        add(memberPath(RD, FD), E->getOperatorLoc());
+        return true;
+      }
+    }
+    add(FD, E->getOperatorLoc());
     return true;
   }
 
