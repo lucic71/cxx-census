@@ -117,6 +117,38 @@ public:
     return true;
   }
 
+  bool VisitMemberExpr(MemberExpr *E) {
+    MemberBases.insert(E->getBase()->IgnoreParens());
+    return true;
+  }
+
+  bool VisitCastExpr(CastExpr *E) {
+    if ((E->getCastKind() != CK_DerivedToBase &&
+         E->getCastKind() != CK_UncheckedDerivedToBase) ||
+        MemberBases.count(E))
+      return true;
+    QualType From = E->getSubExpr()->getType();
+    if (From->isPointerType())
+      From = From->getPointeeType();
+    const CXXRecordDecl *Derived = From->getAsCXXRecordDecl();
+    if (!Derived || IsInSystemHeader(Derived))
+      return true;
+    std::string Detail;
+    for (const CXXBaseSpecifier *B : E->path()) {
+      const CXXRecordDecl *Base = B->getType()->getAsCXXRecordDecl();
+      Base = Base ? Base->getDefinition() : nullptr;
+      if (!Base || (Base->isAbstract() && !hasDataMembers(Base)))
+        continue;
+      std::string Issues = baseIssues(*B);
+      if (!Issues.empty())
+        Detail += " [" + B->getType().getAsString() + ":" + Issues + "]";
+    }
+    if (!Detail.empty())
+      reportExpr("upcast", E->getBeginLoc(),
+                 E->getSubExpr()->getType().getAsString() + " ->" + Detail);
+    return true;
+  }
+
   bool VisitCXXDynamicCastExpr(CXXDynamicCastExpr *E) {
     reportExpr("dynamic_cast", E->getBeginLoc(),
                E->getTypeAsWritten().getAsString());
@@ -141,6 +173,7 @@ private:
     report(Ctx, "inheritance", Loc, What.str() + " " + Type.str());
   }
 
+  llvm::SmallPtrSet<const Expr *, 16> MemberBases;
   ASTContext &Ctx;
   const SourceManager &SM;
 };
