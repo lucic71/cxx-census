@@ -89,6 +89,10 @@ public:
       if (FD && FD->getDeclName().isIdentifier() &&
           Allocators.contains(FD->getName()))
         return reportBytes(E, To, FD->getName());
+      const auto *Arith =
+          dyn_cast<BinaryOperator>(E->getSubExpr()->IgnoreParenImpCasts());
+      if (Arith && Arith->isAdditiveOp() && !isVoidPointer(To))
+        return reportBytes(E, To, "bytes-to-struct");
       return true;
     }
     if (isBytePointer(To) && !isBytePointer(From) && !isVoidPointer(From))

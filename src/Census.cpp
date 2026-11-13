@@ -50,6 +50,8 @@ const llvm::StringMap<FilterFn> AllFilters = {
     {"std-specialization", Filters::HasStdSpecialization},
     {"empty-array", Filters::HasEmptyArray},
     {"fancy-pointer", Filters::HasFancyPointer},
+    {"linux-concurrency", Filters::HasLinuxConcurrency},
+    {"volatile", Filters::HasVolatile},
 };
 
 class Consumer : public ASTConsumer {

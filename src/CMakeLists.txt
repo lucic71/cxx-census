@@ -38,6 +38,8 @@ add_library(census MODULE
   filters/StdSpecialization.cpp
   filters/EmptyArray.cpp
   filters/FancyPointer.cpp
+  filters/LinuxConcurrency.cpp
+  filters/Volatile.cpp
 )
 set_target_properties(census PROPERTIES PREFIX "")
 

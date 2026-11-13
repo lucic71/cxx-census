@@ -32,3 +32,16 @@ int use(void) {
   free(p);
   return (int)addr + (back != 0) + (fake != 0) + praw[0];
 }
+
+struct list_head {
+  struct list_head *next, *prev;
+};
+
+struct item {
+  int val;
+  struct list_head node;
+};
+
+struct item *kernel_container_of(struct list_head *p) {
+  return (struct item *)((void *)p - __builtin_offsetof(struct item, node));
+}
