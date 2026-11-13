@@ -132,8 +132,11 @@ public:
     const auto *Owner = dyn_cast<RecordDecl>(Member->getDeclContext());
     QualType Object = E->getBase()->IgnoreParenImpCasts()->getType();
     if (E->isArrow())
-      Object = Object->getPointeeType();
-    const RecordDecl *RD = Object->getAsRecordDecl();
+      Object = Object->isPointerType()
+                   ? Object->getPointeeType()
+                   : E->getBase()->getType()->getPointeeType();
+    const RecordDecl *RD =
+        Object.isNull() ? nullptr : Object->getAsRecordDecl();
     if (Owner && RD && RD != Owner && Owner->getName().starts_with("_") &&
         IsInSystemHeader(RD))
       add(memberPath(RD, Member), Loc);
