@@ -1,0 +1,5 @@
+#!/bin/bash -eu
+
+cmake -S "$SRC/libzmq" -B "$BUILD" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+  -DZMQ_BUILD_TESTS=OFF -DWITH_LIBSODIUM=OFF -DENABLE_CURVE=OFF -DWITH_DOCS=OFF
+cmake --build "$BUILD" -j "$(nproc)"
