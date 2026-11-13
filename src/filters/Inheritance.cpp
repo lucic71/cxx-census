@@ -100,8 +100,14 @@ public:
 
   bool VisitCXXRecordDecl(CXXRecordDecl *D) {
     if (!D->isThisDeclarationADefinition() || D->isDependentContext() ||
-        D->getNumBases() == 0 || IsInSystemHeader(D))
+        IsInSystemHeader(D))
       return true;
+    if (D->getNumBases() == 0) {
+      if (D->isPolymorphic() && !D->isAbstract())
+        report(Ctx, "inheritance", D->getLocation(),
+               "polymorphic-root " + D->getQualifiedNameAsString());
+      return true;
+    }
 
     std::string Detail;
     for (const CXXBaseSpecifier &B : D->bases()) {

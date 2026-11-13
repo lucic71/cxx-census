@@ -34,6 +34,10 @@ add_library(census MODULE
   filters/Switch.cpp
   filters/LambdaTemplateArgument.cpp
   filters/OperatorNew.cpp
+  filters/Cpo.cpp
+  filters/StdSpecialization.cpp
+  filters/EmptyArray.cpp
+  filters/FancyPointer.cpp
 )
 set_target_properties(census PROPERTIES PREFIX "")
 

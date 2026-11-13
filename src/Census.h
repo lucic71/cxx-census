@@ -29,6 +29,10 @@ void HasCoroutines(clang::ASTContext &Ctx);
 void HasSwitch(clang::ASTContext &Ctx);
 void HasLambdaTemplateArgument(clang::ASTContext &Ctx);
 void HasOperatorNew(clang::ASTContext &Ctx);
+void HasCpo(clang::ASTContext &Ctx);
+void HasStdSpecialization(clang::ASTContext &Ctx);
+void HasEmptyArray(clang::ASTContext &Ctx);
+void HasFancyPointer(clang::ASTContext &Ctx);
 } // namespace Filters
 
 } // namespace census

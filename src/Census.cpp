@@ -46,6 +46,10 @@ const llvm::StringMap<FilterFn> AllFilters = {
     {"switch", Filters::HasSwitch},
     {"lambda-template-argument", Filters::HasLambdaTemplateArgument},
     {"operator-new", Filters::HasOperatorNew},
+    {"cpo", Filters::HasCpo},
+    {"std-specialization", Filters::HasStdSpecialization},
+    {"empty-array", Filters::HasEmptyArray},
+    {"fancy-pointer", Filters::HasFancyPointer},
 };
 
 class Consumer : public ASTConsumer {

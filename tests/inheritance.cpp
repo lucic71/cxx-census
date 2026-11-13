@@ -98,3 +98,10 @@ int upcasts(DerivedConcrete &dc, DerivedData *dd, Supported *s) {
   int r = dc.helper() + dd->X;
   return cb->f() + db.f() + pb->f() + r;
 }
+
+struct PolyRoot {
+  virtual ~PolyRoot() {}
+};
+struct AbstractRoot {
+  virtual ~AbstractRoot() = 0;
+};
