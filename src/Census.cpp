@@ -42,6 +42,10 @@ const llvm::StringMap<FilterFn> AllFilters = {
     {"global-destructor", Filters::HasGlobalDestructor},
     {"goto", Filters::HasGoto},
     {"terminal", Filters::HasTerminal},
+    {"coroutines", Filters::HasCoroutines},
+    {"switch", Filters::HasSwitch},
+    {"lambda-template-argument", Filters::HasLambdaTemplateArgument},
+    {"operator-new", Filters::HasOperatorNew},
 };
 
 class Consumer : public ASTConsumer {

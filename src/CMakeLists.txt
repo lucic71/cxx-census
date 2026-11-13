@@ -30,6 +30,10 @@ add_library(census MODULE
   filters/GlobalDestructor.cpp
   filters/Goto.cpp
   filters/Terminal.cpp
+  filters/Coroutines.cpp
+  filters/Switch.cpp
+  filters/LambdaTemplateArgument.cpp
+  filters/OperatorNew.cpp
 )
 set_target_properties(census PROPERTIES PREFIX "")
 

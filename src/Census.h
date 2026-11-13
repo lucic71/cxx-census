@@ -25,6 +25,10 @@ void HasBitfield(clang::ASTContext &Ctx);
 void HasGlobalDestructor(clang::ASTContext &Ctx);
 void HasGoto(clang::ASTContext &Ctx);
 void HasTerminal(clang::ASTContext &Ctx);
+void HasCoroutines(clang::ASTContext &Ctx);
+void HasSwitch(clang::ASTContext &Ctx);
+void HasLambdaTemplateArgument(clang::ASTContext &Ctx);
+void HasOperatorNew(clang::ASTContext &Ctx);
 } // namespace Filters
 
 } // namespace census
