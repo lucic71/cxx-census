@@ -13,7 +13,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 PROJECTS = ROOT / "projects"
-PLUGIN = "/census/build/plugin/census.so"
+PLUGIN_DIR = f"/census/build/plugin-runs/{os.getpid()}"
+PLUGIN = f"{PLUGIN_DIR}/census.so"
 
 log = logging.getLogger("census")
 print_lock = threading.Lock()

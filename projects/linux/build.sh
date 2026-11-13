@@ -1,7 +1,7 @@
 #!/bin/bash -eu
 
 KCONFIG=${KCONFIG:-defconfig}
-MAKE=(make -C "$SRC/linux" O="$BUILD" CC="$CC" HOSTCC="$CC" -j "$(nproc)" -k)
+MAKE=(make -C "$SRC/linux" O="$BUILD" CC="$CC" HOSTCC="$CC" -j "${JOBS:-$(nproc)}" -k)
 
 "${MAKE[@]}" "$KCONFIG"
 "$SRC/linux/scripts/config" --file "$BUILD/.config" -d WERROR
