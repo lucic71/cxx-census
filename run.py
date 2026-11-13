@@ -90,8 +90,8 @@ def main():
         log.error("base image failed, not building any project")
         sys.exit(1)
 
-    if not run(in_base("cmake -S /census/src -B /census/build/plugin -G Ninja"
-                       " && cmake --build /census/build/plugin"), "plugin"):
+    if not run(in_base(f"cmake -S /census/src -B {PLUGIN_DIR} -G Ninja"
+                       f" && cmake --build {PLUGIN_DIR}"), "plugin"):
         log.error("plugin failed, not building any project")
         sys.exit(1)
 

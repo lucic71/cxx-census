@@ -4,6 +4,12 @@
 #include <clang/Frontend/CompilerInstance.h>
 #include <clang/Frontend/FrontendPluginRegistry.h>
 #include <llvm/ADT/StringMap.h>
+#include <llvm/Support/Process.h>
+#include <llvm/Support/raw_ostream.h>
+
+#include <algorithm>
+#include <cstdlib>
+#include <memory>
 
 #include <vector>
 
@@ -11,14 +17,49 @@ using namespace clang;
 
 namespace census {
 
+namespace {
+
+llvm::raw_ostream &output(const SourceManager &SM) {
+  static std::unique_ptr<llvm::raw_fd_ostream> File;
+  static bool Tried = false;
+  if (!Tried) {
+    Tried = true;
+    if (const char *Dir = std::getenv("CENSUS_OUT_DIR")) {
+      std::string Main = "unknown";
+      if (OptionalFileEntryRef FE = SM.getFileEntryRefForID(SM.getMainFileID()))
+        Main = FE->getName().str();
+      std::string Name = Main;
+      std::replace(Name.begin(), Name.end(), '/', '_');
+      std::string Path = (llvm::Twine(Dir) + "/" + Name + "." +
+                          llvm::Twine(llvm::sys::Process::getProcessId()) +
+                          ".census")
+                             .str();
+      std::error_code EC;
+      File = std::make_unique<llvm::raw_fd_ostream>(Path, EC);
+      if (EC)
+        File.reset();
+      else {
+        File->SetUnbuffered();
+        *File << ("tu: " + Main + "\n");
+      }
+    }
+  }
+  return File ? static_cast<llvm::raw_ostream &>(*File) : llvm::errs();
+}
+
+} // namespace
+
 void report(const ASTContext &Ctx, StringRef Filter, SourceLocation Loc,
             StringRef Detail) {
   const SourceManager &SM = Ctx.getSourceManager();
   PresumedLoc P = SM.getPresumedLoc(SM.getFileLoc(Loc));
   if (P.isInvalid())
     return;
-  llvm::errs() << "census: " << Filter << ": " << P.getFilename() << ":"
-               << P.getLine() << ":" << P.getColumn() << ": " << Detail << "\n";
+  std::string Line = ("census: " + Filter + ": " + P.getFilename() + ":" +
+                      llvm::Twine(P.getLine()) + ":" +
+                      llvm::Twine(P.getColumn()) + ": " + Detail + "\n")
+                         .str();
+  output(SM) << Line;
 }
 
 namespace {
