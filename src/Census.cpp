@@ -40,6 +40,8 @@ const llvm::StringMap<FilterFn> AllFilters = {
     {"self-reference", Filters::HasSelfReference},
     {"bitfield", Filters::HasBitfield},
     {"global-destructor", Filters::HasGlobalDestructor},
+    {"goto", Filters::HasGoto},
+    {"terminal", Filters::HasTerminal},
 };
 
 class Consumer : public ASTConsumer {

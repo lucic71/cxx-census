@@ -28,6 +28,8 @@ add_library(census MODULE
   filters/SelfReference.cpp
   filters/Bitfield.cpp
   filters/GlobalDestructor.cpp
+  filters/Goto.cpp
+  filters/Terminal.cpp
 )
 set_target_properties(census PROPERTIES PREFIX "")
 

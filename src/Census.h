@@ -23,6 +23,8 @@ void HasMemberPointer(clang::ASTContext &Ctx);
 void HasSelfReference(clang::ASTContext &Ctx);
 void HasBitfield(clang::ASTContext &Ctx);
 void HasGlobalDestructor(clang::ASTContext &Ctx);
+void HasGoto(clang::ASTContext &Ctx);
+void HasTerminal(clang::ASTContext &Ctx);
 } // namespace Filters
 
 } // namespace census
