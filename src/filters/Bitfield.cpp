@@ -29,7 +29,7 @@ public:
     return true;
   }
 
-  bool VisitCXXRecordDecl(CXXRecordDecl *D) {
+  bool VisitRecordDecl(RecordDecl *D) {
     if (!D->isThisDeclarationADefinition() || D->isDependentContext() ||
         IsInSystemHeader(D))
       return true;
@@ -42,10 +42,12 @@ public:
       F["aligned"]++;
     if (D->isUnion())
       F["union"]++;
-    if (D->isPolymorphic())
-      F["vptr"]++;
-    if (D->getNumBases() > 0)
-      F["bases"]++;
+    if (const auto *CD = dyn_cast<CXXRecordDecl>(D)) {
+      if (CD->isPolymorphic())
+        F["vptr"]++;
+      if (CD->getNumBases() > 0)
+        F["bases"]++;
+    }
     if (!F.size())
       Features.erase(canonical(D));
     return true;
@@ -95,8 +97,8 @@ public:
   }
 
 private:
-  const CXXRecordDecl *canonical(const RecordDecl *RD) {
-    return cast<CXXRecordDecl>(RD->getCanonicalDecl());
+  const RecordDecl *canonical(const RecordDecl *RD) {
+    return cast<RecordDecl>(RD->getCanonicalDecl());
   }
 
   void observe(QualType T, StringRef How, SourceLocation Loc) {
@@ -104,7 +106,7 @@ private:
         SM.isInSystemHeader(SM.getExpansionLoc(Loc)))
       return;
     T = Ctx.getBaseElementType(T);
-    if (const auto *RD = T->getAsCXXRecordDecl())
+    if (const auto *RD = T->getAsRecordDecl())
       Observed[canonical(RD)].insert(How.str());
   }
 
@@ -123,8 +125,8 @@ private:
 
   ASTContext &Ctx;
   const SourceManager &SM;
-  std::map<const CXXRecordDecl *, std::map<std::string, unsigned>> Features;
-  std::map<const CXXRecordDecl *, std::set<std::string>> Observed;
+  std::map<const RecordDecl *, std::map<std::string, unsigned>> Features;
+  std::map<const RecordDecl *, std::set<std::string>> Observed;
 };
 
 } // namespace

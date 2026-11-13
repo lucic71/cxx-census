@@ -49,6 +49,8 @@ private:
 } // namespace
 
 void Filters::HasExceptions(ASTContext &Ctx) {
+  if (!Ctx.getLangOpts().CPlusPlus)
+    return;
   const SourceManager &SM = Ctx.getSourceManager();
   report(Ctx, "exceptions", SM.getLocForStartOfFile(SM.getMainFileID()),
          Ctx.getLangOpts().CXXExceptions ? "exceptions-enabled"

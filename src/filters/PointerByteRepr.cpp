@@ -13,8 +13,8 @@ namespace {
 const llvm::StringSet<> Allocators = {"malloc", "calloc", "realloc",
                                       "aligned_alloc", "reallocarray"};
 
-bool hasPointerFields(const CXXRecordDecl *RD,
-                      llvm::SmallPtrSetImpl<const CXXRecordDecl *> &Seen) {
+bool hasPointerFields(const RecordDecl *RD,
+                      llvm::SmallPtrSetImpl<const RecordDecl *> &Seen) {
   RD = RD ? RD->getDefinition() : nullptr;
   if (!RD || !Seen.insert(RD).second)
     return false;
@@ -22,12 +22,13 @@ bool hasPointerFields(const CXXRecordDecl *RD,
     QualType T = RD->getASTContext().getBaseElementType(F->getType());
     if (T->isPointerType() || T->isMemberPointerType())
       return true;
-    if (hasPointerFields(T->getAsCXXRecordDecl(), Seen))
+    if (hasPointerFields(T->getAsRecordDecl(), Seen))
       return true;
   }
-  for (const CXXBaseSpecifier &B : RD->bases())
-    if (hasPointerFields(B.getType()->getAsCXXRecordDecl(), Seen))
-      return true;
+  if (const auto *CD = dyn_cast<CXXRecordDecl>(RD))
+    for (const CXXBaseSpecifier &B : CD->bases())
+      if (hasPointerFields(B.getType()->getAsRecordDecl(), Seen))
+        return true;
   return false;
 }
 
@@ -56,11 +57,11 @@ public:
     return true;
   }
 
-  bool VisitCXXRecordDecl(CXXRecordDecl *D) {
+  bool VisitRecordDecl(RecordDecl *D) {
     if (!D->isUnion() || !D->isThisDeclarationADefinition() ||
         D->isDependentContext() || IsInSystemHeader(D))
       return true;
-    llvm::SmallPtrSet<const CXXRecordDecl *, 8> Seen;
+    llvm::SmallPtrSet<const RecordDecl *, 8> Seen;
     if (hasPointerFields(D, Seen))
       report(Ctx, "pointer-byterepr", D->getLocation(),
              "union-with-pointers " + D->getQualifiedNameAsString());
@@ -101,8 +102,8 @@ private:
   llvm::SmallPtrSet<const Expr *, 8> Freed;
   bool reportBytes(const CastExpr *E, QualType T, StringRef What) {
     QualType Pointee = Ctx.getBaseElementType(T->getPointeeType());
-    llvm::SmallPtrSet<const CXXRecordDecl *, 8> Seen;
-    if (hasPointerFields(Pointee->getAsCXXRecordDecl(), Seen))
+    llvm::SmallPtrSet<const RecordDecl *, 8> Seen;
+    if (hasPointerFields(Pointee->getAsRecordDecl(), Seen))
       report(Ctx, "pointer-byterepr", E->getBeginLoc(),
              What.str() + " struct-with-pointers " + Pointee.getAsString());
     return true;
