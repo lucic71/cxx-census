@@ -90,3 +90,11 @@ int uses(PureBase *p, NonAbstract &r) {
   (void)typeid(p);
   return d ? 1 : 0;
 }
+
+int upcasts(DerivedConcrete &dc, DerivedData *dd, Supported *s) {
+  ConcreteBase *cb = &dc;
+  DataBase &db = *dd;
+  PureBase *pb = s;
+  int r = dc.helper() + dd->X;
+  return cb->f() + db.f() + pb->f() + r;
+}
