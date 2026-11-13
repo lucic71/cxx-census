@@ -44,13 +44,13 @@ def in_base(script):
             "-v", f"{ROOT}:/census", "census-base", "bash", "-c", script]
 
 
-def build(project, cxxflags):
+def build(project, flags):
     log.info("[%s] starting", project)
     start = time.monotonic()
     image = f"census-{project}"
     ok = run(["docker", "build", "-t", image, str(PROJECTS / project)], project) and run(
-        ["docker", "run", "--rm", "-v", f"{ROOT}:/census", "-e", f"CXXFLAGS={cxxflags}",
-         image, f"/census/projects/{project}/build.sh"],
+        ["docker", "run", "--rm", "-v", f"{ROOT}:/census", "-e", f"CXXFLAGS={flags}",
+         "-e", f"CFLAGS={flags}", image, f"/census/projects/{project}/build.sh"],
         project,
     )
     elapsed = time.monotonic() - start
@@ -104,18 +104,19 @@ def main():
 
     log.info("building %d project(s), %d at a time: %s", len(projects), args.jobs, " ".join(projects))
 
-    cxxflags = f"-fplugin={PLUGIN}"
+    flags = f"-fplugin={PLUGIN}"
     if args.filters is not None:
         for name in args.filters.split(","):
-            cxxflags += f" -fplugin-arg-census-{name}"
+            flags += f" -fplugin-arg-census-{name}"
     log.info("filters: %s", args.filters or "all")
 
-    if not run(in_base(f"echo | $CXX -x c++ -fsyntax-only {cxxflags} -"), "plugin"):
+    if not run(in_base(f"echo | $CXX -x c++ -fsyntax-only {flags} -"
+                       f" && echo | $CC -x c -fsyntax-only {flags} -"), "plugin"):
         log.error("plugin does not load with these filters, not building any project")
         sys.exit(1)
 
     with ThreadPoolExecutor(max_workers=args.jobs) as pool:
-        results = dict(zip(projects, pool.map(lambda p: build(p, cxxflags), projects)))
+        results = dict(zip(projects, pool.map(lambda p: build(p, flags), projects)))
 
     run(in_base("find /census/src -name '*.cpp' -o -name '*.h'"
                 " | xargs clang-format-$CLANG_VERSION -i"), "format")
