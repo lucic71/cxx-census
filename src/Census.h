@@ -35,6 +35,7 @@ void HasEmptyArray(clang::ASTContext &Ctx);
 void HasFancyPointer(clang::ASTContext &Ctx);
 void HasLinuxConcurrency(clang::ASTContext &Ctx);
 void HasVolatile(clang::ASTContext &Ctx);
+void HasSetjmp(clang::ASTContext &Ctx);
 } // namespace Filters
 
 } // namespace census

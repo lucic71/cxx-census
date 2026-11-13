@@ -93,6 +93,7 @@ const llvm::StringMap<FilterFn> AllFilters = {
     {"fancy-pointer", Filters::HasFancyPointer},
     {"linux-concurrency", Filters::HasLinuxConcurrency},
     {"volatile", Filters::HasVolatile},
+    {"setjmp", Filters::HasSetjmp},
 };
 
 class Consumer : public ASTConsumer {

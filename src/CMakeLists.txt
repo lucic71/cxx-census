@@ -40,6 +40,7 @@ add_library(census MODULE
   filters/FancyPointer.cpp
   filters/LinuxConcurrency.cpp
   filters/Volatile.cpp
+  filters/Setjmp.cpp
 )
 set_target_properties(census PROPERTIES PREFIX "")
 
