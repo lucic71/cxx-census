@@ -105,3 +105,70 @@ struct PolyRoot {
 struct AbstractRoot {
   virtual ~AbstractRoot() = 0;
 };
+
+struct Iface {
+  virtual ~Iface() {}
+  virtual int run() = 0;
+};
+struct Impl : Iface {
+  int run() override { return 1; }
+};
+
+struct Template {
+  Template() { init(); }
+  virtual ~Template() { init(); }
+  int describe() { return area() + Template::area(); }
+  virtual void init() {}
+  virtual int area() { return 0; }
+  int X = 0;
+  int name() const { return 1; }
+  virtual Template *clone() { return this; }
+};
+struct Square : Template {
+  int area() override { return 4; }
+  int name() const { return 2; }
+  Square *clone() override { return this; }
+};
+
+struct Left {
+  int L;
+  virtual ~Left() {}
+};
+struct Right {
+  int R;
+  virtual ~Right() {}
+};
+struct Both : Left, Right {};
+
+#include <map>
+#include <set>
+
+int newuses(Template *t, Template *u, Template *arr, Square &sq, Both &b) {
+  Template plain;
+  Template copy = sq;
+  copy = sq;
+  Right *r = &b;
+  Square *s = static_cast<Square *>(t);
+  std::set<Template *> keys;
+  std::map<Template *, int> m;
+  void *erased = t;
+  int c = (t == u) + (t != nullptr) + (t < u);
+  Template *next = arr + 1;
+  ++next;
+  return c + arr[1].X + r->R + s->X + plain.X + copy.X + (erased != nullptr) +
+         (int)keys.size() + (int)m.size() + next->X;
+}
+
+struct Writer {
+  virtual ~Writer() {}
+  virtual int write(int) = 0;
+  int flush() { return 0; }
+};
+struct Mid : Writer {
+  int write(int) override { return 1; }
+};
+struct Leaf : Mid {
+  int write(int) override { return 2; }
+  int write(double) { return 3; }
+  int flush() { return 4; }
+};
