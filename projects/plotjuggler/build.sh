@@ -7,7 +7,7 @@ deps() {
     --lockfile=conan.lock --lockfile-partial -s build_type=Release -s compiler.cppstd=20 \
     -c "tools.build:compiler_executables={'c':'$CC','cpp':'$CXX'}" "$@"
 }
-deps -c "tools.build:cxxflags=['$CXXFLAGS']" || { echo "census: dep conan packages built without plugin"; CXXFLAGS= deps; }
+deps -c "tools.build:cxxflags=['$CXXFLAGS']" -c "tools.build:cflags=['$CFLAGS']" || { echo "census: dep conan packages built without plugin"; CXXFLAGS= CFLAGS= deps; }
 
 cmake -S . -B "$BUILD/pj" -G Ninja -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_TOOLCHAIN_FILE="$BUILD/conan/conan_toolchain.cmake" -DCMAKE_PREFIX_PATH=/opt/Qt/6.12.0/gcc_64

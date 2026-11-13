@@ -9,7 +9,7 @@ b2() {
     toolset=clang-23 link=shared variant=release linkflags=-stdlib=libc++ "$@" install \
     --with-context --with-coroutine --with-iostreams --with-url --with-container --with-regex --with-thread
 }
-b2 cxxflags="$CXXFLAGS -stdlib=libc++" || { rm -rf "$BUILD/boost"; echo "census: dep boost built without plugin"; env -u CXXFLAGS b2 cxxflags=-stdlib=libc++; }
+b2 cxxflags="$CXXFLAGS -stdlib=libc++" cflags="$CFLAGS" || { rm -rf "$BUILD/boost"; echo "census: dep boost built without plugin"; env -u CXXFLAGS b2 cxxflags=-stdlib=libc++; }
 cmk() {
   cmake -S "$1" -B "$BUILD/$2" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$D" "${@:3}"
   ninja -C "$BUILD/$2" -j "$(nproc)" install

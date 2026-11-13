@@ -2,7 +2,7 @@
 
 fuse() { rm -rf "$BUILD/fuse" && meson setup "$BUILD/fuse" /opt/fuse-3.16.2 --prefix="$BUILD/deps" --libdir=lib \
   -Ddefault_library=both -Dutils=false -Dexamples=false -Dtests=false && ninja -C "$BUILD/fuse" install; }
-fuse || { env -u CXXFLAGS bash -c "$(declare -f fuse); fuse" && echo "census: dep libfuse built without plugin"; }
+fuse || { env -u CXXFLAGS -u CFLAGS bash -c "$(declare -f fuse); fuse" && echo "census: dep libfuse built without plugin"; }
 cat > "$BUILD/clang++" <<'W'
 #!/bin/bash
 args=()

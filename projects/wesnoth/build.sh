@@ -5,7 +5,7 @@ dep() {
   local a=(-S "$SRC/$n" -B "$BUILD/$n" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$BUILD/deps" -DCMAKE_PREFIX_PATH="$BUILD/deps" "$@")
   if ! { cmake "${a[@]}" -DCMAKE_CXX_FLAGS="$CXXFLAGS" && cmake --build "$BUILD/$n" -j "$(nproc)"; }; then
     rm -rf "$BUILD/$n"; echo "census: dep $n built without plugin"
-    env -u CXXFLAGS cmake "${a[@]}" && env -u CXXFLAGS cmake --build "$BUILD/$n" -j "$(nproc)"
+    env -u CXXFLAGS -u CFLAGS cmake "${a[@]}" && env -u CXXFLAGS -u CFLAGS cmake --build "$BUILD/$n" -j "$(nproc)"
   fi
   cmake --install "$BUILD/$n"
 }

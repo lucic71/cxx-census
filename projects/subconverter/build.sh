@@ -13,8 +13,8 @@ cron() {
     -DCMAKE_CXX_FLAGS="${CXXFLAGS:-}" && cmake --build "$BUILD/cron" --target libcron -j "$(nproc)" \
     && cmake --install "$BUILD/cron"
 }
-qjs || { echo "census: dep quickjs built without plugin"; rm -rf "$BUILD/qjs"; (unset CXXFLAGS; qjs); }
-cron || { echo "census: dep libcron built without plugin"; rm -rf "$BUILD/cron"; (unset CXXFLAGS; cron); }
+qjs || { echo "census: dep quickjs built without plugin"; rm -rf "$BUILD/qjs"; (unset CXXFLAGS CFLAGS; qjs); }
+cron || { echo "census: dep libcron built without plugin"; rm -rf "$BUILD/cron"; (unset CXXFLAGS CFLAGS; cron); }
 
 cmake -S "$SRC/subconverter" -B "$BUILD/subconverter" -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
   -DCMAKE_PREFIX_PATH="$D" -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=lld
